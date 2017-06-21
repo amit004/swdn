@@ -36,7 +36,7 @@ public class LoginController {
 		if (object != null)
 			swdnResponse.setData(object);
 		else
-			swdnResponse.setData(exception);
+			swdnResponse.setSwdnException(exception);
 
 		return swdnResponse;
 	}
