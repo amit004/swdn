@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Implementation-Title: Swdn
+Implementation-Version: 1.0.0.-SNAPSHOT
+Built-By: napendra
+Implementation-Vendor-Id: com.swdn
+Build-Jdk: 1.8.0_121
+Implementation-URL: http://projects.spring.io/spring-boot/Swdn-Mobile/
+Created-By: Maven Integration for Eclipse
+Implementation-Vendor: Pivotal Software, Inc.
+
