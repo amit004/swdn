@@ -15,13 +15,13 @@ import com.swdn.service.LoginService;
 public class LoginController {
 
 	@Autowired
-	LoginService LoginService;
+	LoginService loginService;
 
 	@RequestMapping(value = "login", method = RequestMethod.POST)
 	public SwdnResponse login(LoginRequest loginRequest) {
 
 		try {
-			return getResponse(LoginService.doLogin(loginRequest), null);
+			return getResponse(loginService.doLogin(loginRequest), null);
 		} catch (SwdnException exception) {
 			// put logger in here..
 			return getResponse(null, exception);
@@ -36,7 +36,7 @@ public class LoginController {
 		if (object != null)
 			swdnResponse.setData(object);
 		else
-			swdnResponse.setData(exception);
+			swdnResponse.setSwdnException(exception);
 
 		return swdnResponse;
 	}

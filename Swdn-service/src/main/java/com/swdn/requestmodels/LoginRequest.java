@@ -13,7 +13,7 @@ public class LoginRequest {
 	private String userName;
 
 	@NotNull
-	@NotEmpty(message = "userName can'nt be left blank")
+	@NotEmpty(message = "password can'nt be left blank")
 	private String password;
 
 }
