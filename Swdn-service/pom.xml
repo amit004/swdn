@@ -5,8 +5,7 @@
 
 	<groupId>com.swdn</groupId>
 	<artifactId>Swdn-Mobile</artifactId>
-	<version>1.0.0.-SNAPSHOT</version>
-	<packaging>jar</packaging>
+     <version>0.0.1-SNAPSHOT</version>
 
 	<name>Swdn</name>
 	<description>project for swdn mobile api</description>
@@ -14,26 +13,22 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>1.5.4.RELEASE</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<version>1.2.3.RELEASE</version>
+		<relativePath />
 	</parent>
-
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<java.version>1.8</java.version>
-	</properties>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
@@ -42,6 +37,12 @@
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<start-class>com.swdn.SwdnApplication</start-class>
+		<java.version>1.7</java.version>
+	</properties>
 
 	<build>
 		<plugins>
@@ -52,5 +53,5 @@
 		</plugins>
 	</build>
 
-
 </project>
+

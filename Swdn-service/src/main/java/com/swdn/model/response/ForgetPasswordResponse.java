@@ -1,4 +1,4 @@
-package com.swdn.responsemodels;
+package com.swdn.model.response;
 
 public class ForgetPasswordResponse {
 

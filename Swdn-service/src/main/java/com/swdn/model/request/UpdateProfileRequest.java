@@ -1,4 +1,4 @@
-package com.swdn.requestmodels;
+package com.swdn.model.request;
 
 import lombok.Data;
 
