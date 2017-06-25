@@ -5,7 +5,7 @@
 
 	<groupId>com.swdn</groupId>
 	<artifactId>Swdn-Mobile</artifactId>
-     <version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1-SNAPSHOT</version>
 
 	<name>Swdn</name>
 	<description>project for swdn mobile api</description>
