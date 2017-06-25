@@ -8,14 +8,14 @@ import org.springframework.web.bind.annotation.RestController;
 import com.swdn.exception.SwdnException;
 import com.swdn.model.request.LoginRequest;
 import com.swdn.model.response.SwdnResponse;
-import com.swdn.service.LoginService;
+import com.swdn.service.UserService;
 
 @RestController
 @RequestMapping(value = "/v1/")
 public class LoginController {
 
 	@Autowired
-	LoginService loginService;
+	UserService userService;
 
 	
 
@@ -23,7 +23,19 @@ public class LoginController {
 	public SwdnResponse login(LoginRequest loginRequest) {
 
 		try {
-			return getResponse(loginService.doLogin(loginRequest), null);
+			return getResponse(userService.doLogin(loginRequest), null);
+		} catch (SwdnException exception) {
+			// put logger in here..
+			return getResponse(null, exception);
+		}
+	}
+	
+	
+	@RequestMapping(value = "logout", method = RequestMethod.POST)
+	public SwdnResponse logut(LoginRequest loginRequest) {
+
+		try {
+			return getResponse(userService.doLogin(loginRequest), null);
 		} catch (SwdnException exception) {
 			// put logger in here..
 			return getResponse(null, exception);

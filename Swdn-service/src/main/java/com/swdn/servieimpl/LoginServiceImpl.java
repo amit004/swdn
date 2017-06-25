@@ -7,10 +7,10 @@ import com.swdn.dao.UserDao;
 import com.swdn.exception.SwdnException;
 import com.swdn.model.request.LoginRequest;
 import com.swdn.model.response.LoginResponse;
-import com.swdn.service.LoginService;
+import com.swdn.service.UserService;
 
 @Service
-public class LoginServiceImpl implements LoginService {
+public class LoginServiceImpl implements UserService {
 
 	@Autowired
 	UserDao userDao;
