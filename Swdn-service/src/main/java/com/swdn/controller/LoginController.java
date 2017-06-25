@@ -1,10 +1,12 @@
 package com.swdn.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.swdn.error.SwdnError;
 import com.swdn.exception.SwdnException;
 import com.swdn.logger.SwdnLogger;
 import com.swdn.model.request.LoginRequest;
@@ -22,7 +24,7 @@ public class LoginController {
 	SwdnLogger swdnLogger;
 
 	@RequestMapping(value = "login", method = RequestMethod.POST)
-	public SwdnResponse login(LoginRequest loginRequest) {
+	public SwdnResponse login(@RequestBody LoginRequest loginRequest) {
 
 		try {
 			return getResponse(userService.doLogin(loginRequest), null);
@@ -46,7 +48,7 @@ public class LoginController {
 	@RequestMapping(value = "healthCheck", method = RequestMethod.GET)
 	public String healthCheck() {
 
-		swdnLogger.debug(LoginController.class.getSimpleName(),"health check");
+		swdnLogger.debug(LoginController.class.getSimpleName(), "health check");
 		return "Service is running";
 
 	}
@@ -55,8 +57,13 @@ public class LoginController {
 		SwdnResponse swdnResponse = new SwdnResponse();
 		if (object != null)
 			swdnResponse.setData(object);
-		else
-			swdnResponse.setSwdnException(exception);
+		else {
+			SwdnError swdnError = new SwdnError();
+			swdnError.setErrorCode(exception.getErrorCode());
+			swdnError.setErrorMessage(exception.getErrorMessage());
+			swdnError.setErrorUiMessage(exception.getUiErrorMessage());
+			swdnResponse.setError(swdnError);
+		}
 
 		return swdnResponse;
 	}

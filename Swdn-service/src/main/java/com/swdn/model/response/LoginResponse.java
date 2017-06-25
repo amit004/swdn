@@ -1,12 +1,20 @@
 package com.swdn.model.response;
 
-import com.swdn.modle.dto.UserDto;
-
 import lombok.Data;
 
 @Data
 public class LoginResponse {
 
-	private UserDto userInfo;
-
+	private Integer userId;
+	
+	private String email;
+	
+	private String firstName;
+	
+	private String lastName;
+	
+	private String userName;
+	
+	private String status;
+	
 }

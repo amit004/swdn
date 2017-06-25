@@ -1,5 +1,6 @@
 package com.swdn.model.response;
 
+import com.swdn.error.SwdnError;
 import com.swdn.exception.SwdnException;
 
 import lombok.Data;
@@ -8,6 +9,6 @@ import lombok.Data;
 public class SwdnResponse {
 
 	private Object data;
-	private SwdnException swdnException;
+	private SwdnError error;
 
 }

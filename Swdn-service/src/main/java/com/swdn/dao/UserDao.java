@@ -1,9 +1,12 @@
 package com.swdn.dao;
 
-import com.swdn.modle.dto.UserDto;
+import com.swdn.entity.User;
+import com.swdn.entity.UserEntity;
 
 public interface UserDao {
 
-	public UserDto getUserDetails(String emailId);
+	public User getUserDetails(String emailId);
+
+	public UserEntity getUserDetailedInfo(Integer integer);
 
 }
