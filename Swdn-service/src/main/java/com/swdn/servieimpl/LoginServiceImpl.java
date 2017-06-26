@@ -1,9 +1,13 @@
 package com.swdn.servieimpl;
 
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.swdn.constants.SeptStatus;
 import com.swdn.dao.UserDao;
+import com.swdn.entity.Sept;
 import com.swdn.entity.User;
 import com.swdn.entity.UserEntity;
 import com.swdn.error.SwdnErrors;
@@ -40,14 +44,43 @@ public class LoginServiceImpl implements UserService {
 					SwdnErrors.SWDN_LOGIN_ERROR_01.name(), SwdnErrors.SWDN_LOGIN_ERROR_01.getErrorMessage());
 		}
 
+		Sept sept = userDao.getSeptDetails(userDto.getId());
+
 		LoginResponse loginResponse = new LoginResponse();
 		loginResponse.setEmail(userDto.getEmail());
 		loginResponse.setFirstName(userEntity.getFirstName());
 		loginResponse.setLastName(userEntity.getLastName());
-     	loginResponse.setStatus(userDto.getUserStatus());
+		loginResponse.setStatus(userDto.getUserStatus());
 		loginResponse.setUserId(userDto.getId());
+		loginResponse.setIsSeptCompleted(false);
+		loginResponse.setUserName(userDto.getUserName());
 
+		if (sept != null) {
+
+			if (sept.getSeptStatus().equalsIgnoreCase(SeptStatus.COMPLETED.name()))
+				loginResponse.setIsSeptCompleted(true);
+
+			else if (sept.getSeptStatus().equalsIgnoreCase(SeptStatus.STARTED.name()))
+				throw new SwdnException(SwdnErrors.SWDN_LOGIN_ERROR_03.getErrorMessage(),
+						SwdnErrors.SWDN_LOGIN_ERROR_03.name(), SwdnErrors.SWDN_LOGIN_ERROR_03.getErrorMessage());
+		}
+
+		String token = generateTempToken();
+		userDao.setUserLoginStatus(userDto.getId(), token);
+		loginResponse.setUserToken(token);
 		return loginResponse;
+	}
+
+	@Override
+	public LoginResponse doLogout(String userName) throws SwdnException {
+		return null;
+	}
+
+	public String generateTempToken() {
+		UUID uuid = UUID.randomUUID();
+		String s = Long.toString(uuid.getMostSignificantBits(), 36) + '-'
+				+ Long.toString(uuid.getLeastSignificantBits(), 36);
+		return s;
 	}
 
 }

@@ -17,4 +17,7 @@ public class LoginResponse {
 	
 	private String status;
 	
+	private Boolean isSeptCompleted;
+	
+	private String userToken;
 }

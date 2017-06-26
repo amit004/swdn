@@ -7,5 +7,8 @@ import com.swdn.model.response.LoginResponse;
 public interface UserService {
 
 	public LoginResponse doLogin(LoginRequest loginRequest) throws SwdnException;
+	
+	public LoginResponse doLogout(String userName) throws SwdnException;
+
 
 }

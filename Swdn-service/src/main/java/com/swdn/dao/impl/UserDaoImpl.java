@@ -8,8 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.swdn.dao.UserDao;
+import com.swdn.entity.Sept;
 import com.swdn.entity.User;
 import com.swdn.entity.UserEntity;
+import com.swdn.entity.UserSessionEntity;
 
 @Repository
 @Transactional
@@ -38,5 +40,33 @@ public class UserDaoImpl implements UserDao {
 	private Session getSession() {
 		return sessionFactory.getCurrentSession();
 	}
+
+
+	@Override
+	public Sept getSeptDetails(Integer userId) {
+		return (Sept) getSession().createQuery("from Sept where userId = :userId")
+				.setParameter("userId", userId).uniqueResult();	}
+
+
+	@Override
+	public void setUserLoginStatus(Integer userId,String token) {
+		
+		//TODO Correct it 
+		UserSessionEntity userSession=new UserSessionEntity();
+		userSession.setUserId(userId);
+		userSession.setUserTypeId(4);
+		userSession.setLoginStatus(1);
+		userSession.setLoginSessionId(token);
+		userSession.setSystemIp("underImplementation");
+		userSession.setAgent("N/A");
+		userSession.setAndroidGsmId("N/A");
+		userSession.setIosGsmId("N/A");
+		userSession.setStatus(1);
+		getSession().save(userSession);
+		
+	}
+	
+	
+	
 
 }
