@@ -1,17 +1,23 @@
 package com.swdn.controller;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.swdn.error.SwdnError;
+import com.swdn.error.SwdnErrors;
 import com.swdn.exception.SwdnException;
 import com.swdn.logger.SwdnLogger;
+import com.swdn.model.request.ForgetPasswordRequest;
 import com.swdn.model.request.LoginRequest;
 import com.swdn.model.response.SwdnResponse;
 import com.swdn.service.UserService;
+import com.swdn.utils.SwdnUtils;
 
 @RestController
 @RequestMapping(value = "v1")
@@ -23,25 +29,56 @@ public class LoginController {
 	@Autowired
 	SwdnLogger swdnLogger;
 
-	@RequestMapping(value = "login", method = RequestMethod.POST)
-	public SwdnResponse login(@RequestBody LoginRequest loginRequest) {
+	@Autowired
+	SwdnUtils swdnUtils;
 
+	@RequestMapping(value = "login", method = RequestMethod.POST)
+	public SwdnResponse login(@Valid @RequestBody LoginRequest loginRequest, BindingResult bindingResult) {
+
+		if (bindingResult.hasErrors()) {
+			return swdnUtils.handleValidationException(SwdnErrors.SWDN_LOGIN_VALIDATION_ERR_00, bindingResult);
+		}
 		try {
-			return getResponse(userService.doLogin(loginRequest), null);
+			return swdnUtils.getResponse(userService.doLogin(loginRequest), null);
 		} catch (SwdnException exception) {
 			swdnLogger.logException(LoginController.class.getSimpleName(), exception);
-			return getResponse(null, exception);
+			return swdnUtils.getResponse(null, exception);
 		}
 	}
 
-	@RequestMapping(value = "logout", method = RequestMethod.POST)
-	public SwdnResponse logut(LoginRequest loginRequest) {
+	@RequestMapping(value = "logout", method = RequestMethod.GET)
+	public SwdnResponse logut(HttpServletRequest request) {
 
 		try {
-			return getResponse(userService.doLogin(loginRequest), null);
+
+			String userToken = request.getHeader("userToken");
+
+			if (userToken == null) {
+				return swdnUtils.getResponse(null,
+						new SwdnException(SwdnErrors.SWDN_LOGOUT_ERROR_01.name(),
+								SwdnErrors.SWDN_LOGOUT_ERROR_01.getErrorMessage(),
+								SwdnErrors.SWDN_LOGOUT_ERROR_01.getErrorMessage()));
+			}
+
+			return swdnUtils.getResponse(userService.doLogout(userToken), null);
 		} catch (SwdnException exception) {
-			// put logger in here..
-			return getResponse(null, exception);
+			swdnLogger.logException(LoginController.class.getSimpleName(), exception);
+			return swdnUtils.getResponse(null, exception);
+		}
+	}
+
+	@RequestMapping(value = "forgotPassword", method = RequestMethod.POST)
+	public SwdnResponse forgetPass(@RequestBody @Valid ForgetPasswordRequest forgetPasswordRequest,BindingResult bindingResult) {
+
+		if (bindingResult.hasErrors()) {
+			return swdnUtils.handleValidationException(SwdnErrors.SWDN_LOGIN_VALIDATION_ERR_00, bindingResult);
+		}
+		
+		try {
+			return swdnUtils.getResponse(userService.forgetPassword(forgetPasswordRequest), null);
+		} catch (SwdnException exception) {
+			swdnLogger.logException(LoginController.class.getSimpleName(), exception);
+			return swdnUtils.getResponse(null, exception);
 		}
 	}
 
@@ -51,21 +88,6 @@ public class LoginController {
 		swdnLogger.debug(LoginController.class.getSimpleName(), "health check");
 		return "Service is running";
 
-	}
-
-	private SwdnResponse getResponse(Object object, SwdnException exception) {
-		SwdnResponse swdnResponse = new SwdnResponse();
-		if (object != null)
-			swdnResponse.setData(object);
-		else {
-			SwdnError swdnError = new SwdnError();
-			swdnError.setErrorCode(exception.getErrorCode());
-			swdnError.setErrorMessage(exception.getErrorMessage());
-			swdnError.setErrorUiMessage(exception.getUiErrorMessage());
-			swdnResponse.setError(swdnError);
-		}
-
-		return swdnResponse;
 	}
 
 }

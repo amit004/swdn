@@ -11,7 +11,7 @@ public class SwdnException extends Exception {
 
 	private String uiErrorMessage;
 
-	public SwdnException(String errorMessage, String errorCode, String uiErrorMessage) {
+	public SwdnException(String errorCode, String errorMessage, String uiErrorMessage) {
 		this.errorCode = errorCode;
 		this.errorMessage = errorMessage;
 		this.uiErrorMessage = uiErrorMessage;
