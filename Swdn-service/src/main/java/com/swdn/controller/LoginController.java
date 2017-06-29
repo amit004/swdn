@@ -1,5 +1,7 @@
 package com.swdn.controller;
 
+import java.util.ArrayList;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,18 +12,25 @@ import com.swdn.error.SwdnError;
 import com.swdn.exception.SwdnException;
 import com.swdn.logger.SwdnLogger;
 import com.swdn.model.request.LoginRequest;
+import com.swdn.model.request.SeptUploadRequest;
 import com.swdn.model.response.SwdnResponse;
+import com.swdn.service.SeptService;
 import com.swdn.service.UserService;
 
 @RestController
 @RequestMapping(value = "v1")
 public class LoginController {
+	@SuppressWarnings("rawtypes")
+	ArrayList septDataArrList;
 
 	@Autowired
 	UserService userService;
 
 	@Autowired
 	SwdnLogger swdnLogger;
+	
+	@Autowired
+	SeptService septService;
 
 	@RequestMapping(value = "login", method = RequestMethod.POST)
 	public SwdnResponse login(@RequestBody LoginRequest loginRequest) {
@@ -43,6 +52,14 @@ public class LoginController {
 			// put logger in here..
 			return getResponse(null, exception);
 		}
+	}
+	
+	@RequestMapping(value = "septupload", method = RequestMethod.POST)
+	public SwdnResponse septUpload(int userID, String SeptInputJson) throws SwdnException{ // SeptUploadRequest septUploadRequest) {
+
+		// added method to parse values from json to arraylist.
+		septDataArrList = septService.septParseData(SeptInputJson);
+		return getResponse(septService.septUploadData(userID,septDataArrList), null);// add method to put all sept data in db
 	}
 
 	@RequestMapping(value = "healthCheck", method = RequestMethod.GET)
