@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.swdn.exception.SwdnException;
 import com.swdn.model.request.SeptUploadRequest;
 import com.swdn.model.response.SwdnResponse;
+import com.swdn.service.SeptService;
 import com.swdn.servieimpl.SeptServiceImpl;
+import com.swdn.utils.SwdnUtils;
 
 @RestController
 @RequestMapping(value="v1")
@@ -19,7 +21,10 @@ public class SeptController {
 
 	
 	@Autowired
-	SeptServiceImpl septService;
+	SeptService septService;
+	
+	@Autowired
+	SwdnUtils swdnUtils;
 	
 	@RequestMapping(value="startSept",method=RequestMethod.GET)
 	public  SwdnResponse startSept(HttpServletRequest httpServletRequest){
@@ -32,7 +37,7 @@ public class SeptController {
 	public SwdnResponse septUpload(@RequestBody SeptUploadRequest septuploadRequest) throws SwdnException{
 
 		// added method to parse values from json to arraylist.
-		septDataArrList = septService.septParseData(SeptInputJson);
-		return getResponse(septService.septUploadData(userID,septDataArrList), null);
+		//septDataArrList = septService.septParseData(SeptInputJson);
+		return swdnUtils.getResponse(septService.septUploadData(septuploadRequest), null);
 	}
 }
