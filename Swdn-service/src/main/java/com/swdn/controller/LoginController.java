@@ -12,9 +12,7 @@ import com.swdn.error.SwdnError;
 import com.swdn.exception.SwdnException;
 import com.swdn.logger.SwdnLogger;
 import com.swdn.model.request.LoginRequest;
-import com.swdn.model.request.SeptUploadRequest;
 import com.swdn.model.response.SwdnResponse;
-import com.swdn.service.SeptService;
 import com.swdn.service.UserService;
 
 @RestController
@@ -54,13 +52,6 @@ public class LoginController {
 		}
 	}
 	
-	@RequestMapping(value = "septupload", method = RequestMethod.POST)
-	public SwdnResponse septUpload(int userID, String SeptInputJson) throws SwdnException{ // SeptUploadRequest septUploadRequest) {
-
-		// added method to parse values from json to arraylist.
-		septDataArrList = septService.septParseData(SeptInputJson);
-		return getResponse(septService.septUploadData(userID,septDataArrList), null);// add method to put all sept data in db
-	}
 
 	@RequestMapping(value = "healthCheck", method = RequestMethod.GET)
 	public String healthCheck() {
