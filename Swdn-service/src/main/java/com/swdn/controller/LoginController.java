@@ -27,9 +27,6 @@ public class LoginController {
 	@Autowired
 	SwdnLogger swdnLogger;
 	
-	@Autowired
-	SeptService septService;
-
 	@RequestMapping(value = "login", method = RequestMethod.POST)
 	public SwdnResponse login(@RequestBody LoginRequest loginRequest) {
 
