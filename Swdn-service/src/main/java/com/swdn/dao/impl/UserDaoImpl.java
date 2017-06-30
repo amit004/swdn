@@ -12,6 +12,8 @@ import com.swdn.entity.Sept;
 import com.swdn.entity.User;
 import com.swdn.entity.UserEntity;
 import com.swdn.entity.UserSessionEntity;
+import com.swdn.error.SwdnErrors;
+import com.swdn.exception.SwdnException;
 
 @Repository
 @Transactional
@@ -29,30 +31,27 @@ public class UserDaoImpl implements UserDao {
 				.setParameter("userName", userName).uniqueResult();
 	}
 
-	
 	@Override
 	public UserEntity getUserDetailedInfo(Integer userId) {
 		return (UserEntity) getSession().createQuery("from UserEntity where userReferenceId = :userReferenceId")
 				.setParameter("userReferenceId", userId).uniqueResult();
 	}
 
-	
 	private Session getSession() {
 		return sessionFactory.getCurrentSession();
 	}
 
-
 	@Override
 	public Sept getSeptDetails(Integer userId) {
-		return (Sept) getSession().createQuery("from Sept where userId = :userId")
-				.setParameter("userId", userId).uniqueResult();	}
-
+		return (Sept) getSession().createQuery("from Sept where userId = :userId").setParameter("userId", userId)
+				.uniqueResult();
+	}
 
 	@Override
-	public void setUserLoginStatus(Integer userId,String token) {
-		
-		//TODO Correct it 
-		UserSessionEntity userSession=new UserSessionEntity();
+	public void setUserLoginStatus(Integer userId, String token) {
+
+		// TODO Correct it
+		UserSessionEntity userSession = new UserSessionEntity();
 		userSession.setUserId(userId);
 		userSession.setUserTypeId(4);
 		userSession.setLoginStatus(1);
@@ -63,10 +62,27 @@ public class UserDaoImpl implements UserDao {
 		userSession.setIosGsmId("N/A");
 		userSession.setStatus(1);
 		getSession().save(userSession);
-		
-	}
-	
-	
-	
 
+	}
+
+	@Override
+	public void setUserStatusLogout(String userToken) throws SwdnException {
+		Session session = getSession();
+		UserSessionEntity userSessionEntity = (UserSessionEntity) session
+				.createQuery("from UserSessionEntity where loginSessionId = :loginSessionId")
+				.setParameter("loginSessionId", userToken).uniqueResult();
+
+		if (userSessionEntity == null)
+			throw new SwdnException(SwdnErrors.SWDN_TOKEN_ERROR_01.name(),
+					SwdnErrors.SWDN_TOKEN_ERROR_01.getErrorMessage(), SwdnErrors.SWDN_TOKEN_ERROR_01.getErrorMessage());
+
+		userSessionEntity.setLoginSessionId("");
+		session.update(userSessionEntity);
+	}
+
+	@Override
+	public User getUserDetailsByEmailId(String emailId) {
+		return (User) getSession().createQuery("from User where email = :email").setParameter("email", emailId)
+				.uniqueResult();
+	}
 }
