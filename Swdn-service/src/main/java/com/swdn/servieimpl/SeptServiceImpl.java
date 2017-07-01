@@ -3,9 +3,6 @@ package com.swdn.servieimpl;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -14,11 +11,9 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.querydsl.QSort;
 import org.springframework.stereotype.Service;
 
 import com.swdn.dao.SeptDao;
-import com.swdn.dao.UserDao;
 import com.swdn.exception.SwdnException;
 import com.swdn.model.request.SeptUploadRequest;
 import com.swdn.model.response.SeptResponse;

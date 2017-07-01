@@ -16,7 +16,7 @@ public class SeptUpload {
 	@Id
 	private Integer userId; //
 
-	@Column(name = "id")
+	@Column(name = "mst_id")
 	private int questionID; //
 	
 	@Column(name = "question_sequence")
@@ -28,8 +28,6 @@ public class SeptUpload {
 	@Column(name = "right_ans_id")
 	private String rightAnswerID; //
 	
-	@Column(name = "mst_id")
-	private int mstID; //
 	
 	@Column(name = "answer")
 	private String answer; //
@@ -62,13 +60,13 @@ public class SeptUpload {
 	private String startTime; //
 	
 	@Column(name = "end_time")
-	private String endTime; //
+	private String endTime; 
 	
 	@Column(name = "attempt_date")
-	private String attemptDate; //
+	private String attemptDate;
 	
 	@Column(name = "academic_year")
-	private String academicYear;//
+	private String academicYear;
 
 	public Integer getUserId() {
 		return userId;
@@ -110,13 +108,6 @@ public class SeptUpload {
 		this.rightAnswerID = rightAnswerID;
 	}
 
-	public int getMstID() {
-		return mstID;
-	}
-
-	public void setMstID(int mstID) {
-		this.mstID = mstID;
-	}
 
 	public String getAnswer() {
 		return answer;

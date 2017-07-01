@@ -12,7 +12,6 @@ import com.swdn.exception.SwdnException;
 import com.swdn.model.request.SeptUploadRequest;
 import com.swdn.model.response.SwdnResponse;
 import com.swdn.service.SeptService;
-import com.swdn.servieimpl.SeptServiceImpl;
 import com.swdn.utils.SwdnUtils;
 
 @RestController

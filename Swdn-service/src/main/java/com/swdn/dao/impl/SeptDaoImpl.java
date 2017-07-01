@@ -27,7 +27,6 @@ public class SeptDaoImpl implements SeptDao{
 		septUploadEntity.setRightAnswerText(septuploadRequest.getQuestion_answer());
 		septUploadEntity.setRightAnswerID(septuploadRequest.getQuestion_answer_option());
 		// need to add more fields
-		septUploadEntity.setMstID(3);
 		septUploadEntity.setAnswer("");
 		septUploadEntity.setAnswerText("");
 		septUploadEntity.setAnswerResult(2);
@@ -39,7 +38,7 @@ public class SeptDaoImpl implements SeptDao{
 		septUploadEntity.setSection("");
 		septUploadEntity.setStartTime("");
 		septUploadEntity.setEndTime("");
-		septUploadEntity.setAttemptDate("");
+		septUploadEntity.setAttemptDate("2017-10-22 12:00:23");
 		septUploadEntity.setAcademicYear("");
 		//session.save(septUploadEntity);
 		session.saveOrUpdate(septUploadEntity);
