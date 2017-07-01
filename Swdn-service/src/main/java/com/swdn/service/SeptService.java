@@ -1,15 +1,17 @@
 package com.swdn.service;
 
-import java.util.ArrayList;
-
 import com.swdn.exception.SwdnException;
 import com.swdn.model.request.SeptUploadRequest;
+import com.swdn.model.response.SeptResponse;
 
 public interface SeptService {
-	@SuppressWarnings("rawtypes")
-	public ArrayList septParseData(String SeptInputJson) throws SwdnException;
+	
+	public SeptResponse startSept(String token) throws SwdnException;
 
-	@SuppressWarnings("rawtypes")
-	public Object septUploadData(SeptUploadRequest septuploadRequest) throws SwdnException;
+	public SeptResponse submitSeptDetails(SeptUploadRequest septuploadRequest) throws SwdnException;
+	
+	
+	public SeptResponse generateSeptReport(SeptUploadRequest septuploadRequest) throws SwdnException;
+
 
 }

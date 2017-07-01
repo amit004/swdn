@@ -27,16 +27,14 @@ public class SeptController {
 	
 	@RequestMapping(value="startSept",method=RequestMethod.GET)
 	public  SwdnResponse startSept(HttpServletRequest httpServletRequest){
-		String token=httpServletRequest.getHeader("");
+		String token=httpServletRequest.getHeader("userToken");
 		return null;
 	}
 	
 
 	@RequestMapping(value = "submitSept", method = RequestMethod.POST)
 	public SwdnResponse septUpload(@RequestBody SeptUploadRequest septuploadRequest) throws SwdnException{
-
 		// added method to parse values from json to arraylist.
-		//septDataArrList = septService.septParseData(SeptInputJson);
-		return swdnUtils.getResponse(septService.septUploadData(septuploadRequest), null);
+		return swdnUtils.getResponse(septService.submitSeptDetails(septuploadRequest), null);
 	}
 }

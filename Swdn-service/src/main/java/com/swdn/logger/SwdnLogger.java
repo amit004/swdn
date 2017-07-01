@@ -30,4 +30,14 @@ public class SwdnLogger {
 
 	}
 
+	public void logException(String Tag, Exception exception) {
+
+		StringBuilder stringBuilder = new StringBuilder(Tag);
+		stringBuilder.append("=> ").append(exception.getMessage());
+		stringBuilder.append("=> ").append(exception.getStackTrace());
+
+		log.error(LoginController.class.getName(), stringBuilder.toString());
+
+	}
+
 }

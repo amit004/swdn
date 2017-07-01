@@ -10,7 +10,7 @@ import lombok.Data;
 @Entity
 @Table(name = "usr_sept_status")
 @Data
-public class Sept {
+public class SeptEntity {
 
 	@Column(name = "user_id")
 	@Id
@@ -25,4 +25,5 @@ public class Sept {
 	@Column(name = "updated_at")
 	private String updatedDate;
 
+	//TODO ATTACH IT WITH YEAR 
 }

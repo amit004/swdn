@@ -2,18 +2,21 @@ package com.swdn.dao.impl;
 
 import javax.transaction.Transactional;
 
+import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.swdn.dao.UserDao;
-import com.swdn.entity.Sept;
+import com.swdn.entity.SeptEntity;
 import com.swdn.entity.User;
 import com.swdn.entity.UserEntity;
 import com.swdn.entity.UserSessionEntity;
 import com.swdn.error.SwdnErrors;
 import com.swdn.exception.SwdnException;
+import com.swdn.modle.dto.TokenDetailsDto;
 
 @Repository
 @Transactional
@@ -42,22 +45,22 @@ public class UserDaoImpl implements UserDao {
 	}
 
 	@Override
-	public Sept getSeptDetails(Integer userId) {
-		return (Sept) getSession().createQuery("from Sept where userId = :userId").setParameter("userId", userId)
-				.uniqueResult();
+	public SeptEntity getSeptDetails(Integer userId) {
+		return (SeptEntity) getSession().createQuery("from SeptEntity where userId = :userId")
+				.setParameter("userId", userId).uniqueResult();
 	}
 
 	@Override
-	public void setUserLoginStatus(Integer userId, String token) {
+	public void setUserLoginStatus(Integer userId, TokenDetailsDto token) {
 
 		// TODO Correct it
 		UserSessionEntity userSession = new UserSessionEntity();
 		userSession.setUserId(userId);
 		userSession.setUserTypeId(4);
 		userSession.setLoginStatus(1);
-		userSession.setLoginSessionId(token);
-		userSession.setSystemIp("underImplementation");
-		userSession.setAgent("N/A");
+		userSession.setLoginSessionId(token.getTokenString());
+		userSession.setSystemIp(token.getLoginIp());
+		userSession.setAgent(token.getAgent());
 		userSession.setAndroidGsmId("N/A");
 		userSession.setIosGsmId("N/A");
 		userSession.setStatus(1);
@@ -68,9 +71,10 @@ public class UserDaoImpl implements UserDao {
 	@Override
 	public void setUserStatusLogout(String userToken) throws SwdnException {
 		Session session = getSession();
-		UserSessionEntity userSessionEntity = (UserSessionEntity) session
-				.createQuery("from UserSessionEntity where loginSessionId = :loginSessionId")
-				.setParameter("loginSessionId", userToken).uniqueResult();
+		UserSessionEntity userSessionEntity = null;
+		Criteria criteria = session.createCriteria(UserSessionEntity.class);
+		userSessionEntity = (UserSessionEntity) criteria.add(Restrictions.eq("loginSessionId", userToken))
+				.uniqueResult();
 
 		if (userSessionEntity == null)
 			throw new SwdnException(SwdnErrors.SWDN_TOKEN_ERROR_01.name(),

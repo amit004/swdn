@@ -1,5 +1,7 @@
 package com.swdn.servieimpl;
 
+import java.util.Calendar;
+import java.util.TimeZone;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.swdn.constants.SeptStatus;
 import com.swdn.dao.UserDao;
-import com.swdn.entity.Sept;
+import com.swdn.entity.SeptEntity;
 import com.swdn.entity.User;
 import com.swdn.entity.UserEntity;
 import com.swdn.error.SwdnErrors;
@@ -17,16 +19,20 @@ import com.swdn.model.request.LoginRequest;
 import com.swdn.model.response.ForgotPasswordResponse;
 import com.swdn.model.response.LoginResponse;
 import com.swdn.model.response.LogoutResponse;
+import com.swdn.modle.dto.TokenDetailsDto;
 import com.swdn.service.UserService;
 
 @Service
-public class LoginServiceImpl implements UserService {
+public class UserServiceImpl implements UserService {
 
 	@Autowired
 	UserDao userDao;
 
+	@Autowired
+	TokenServiceImpl tokenService;
+
 	@Override
-	public LoginResponse doLogin(LoginRequest loginRequest) throws SwdnException {
+	public LoginResponse doLogin(LoginRequest loginRequest, TokenDetailsDto tokenDetails) throws SwdnException {
 
 		User userDto = userDao.getUserDetails(loginRequest.getUserName());
 
@@ -47,7 +53,7 @@ public class LoginServiceImpl implements UserService {
 					SwdnErrors.SWDN_ERROR_01.getErrorMessage());
 		}
 
-		Sept sept = userDao.getSeptDetails(userDto.getId());
+		SeptEntity sept = userDao.getSeptDetails(userDto.getId());
 
 		LoginResponse loginResponse = new LoginResponse();
 		loginResponse.setEmail(userDto.getEmail());
@@ -68,9 +74,18 @@ public class LoginServiceImpl implements UserService {
 						SwdnErrors.SWDN_ERROR_03.getErrorMessage());
 		}
 
-		String token = generateTempToken();
-		userDao.setUserLoginStatus(userDto.getId(), token);
-		loginResponse.setUserToken(token);
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTimeZone(TimeZone.getTimeZone("Asia/Calcutta"));
+
+
+		calendar.add(Calendar.MONTH, 1);
+
+		tokenDetails.setTokenExpirationTime(calendar.getTime().toGMTString());
+
+		tokenDetails.setUserName(loginRequest.getUserName());
+
+		userDao.setUserLoginStatus(userDto.getId(), tokenService.encryptToken(tokenDetails));
+		loginResponse.setUserToken(tokenDetails.getTokenString());
 		return loginResponse;
 	}
 
@@ -82,12 +97,6 @@ public class LoginServiceImpl implements UserService {
 		return logoutResponse;
 	}
 
-	public String generateTempToken() {
-		UUID uuid = UUID.randomUUID();
-		String s = Long.toString(uuid.getMostSignificantBits(), 36) + '-'
-				+ Long.toString(uuid.getLeastSignificantBits(), 36);
-		return s;
-	}
 
 	@Override
 	public ForgotPasswordResponse forgetPassword(ForgetPasswordRequest forgetPassRequest) throws SwdnException {
@@ -95,10 +104,15 @@ public class LoginServiceImpl implements UserService {
 		if (user == null)
 			throw new SwdnException(SwdnErrors.SWDN_ERROR_01.name(), SwdnErrors.SWDN_ERROR_01.getErrorMessage(),
 					SwdnErrors.SWDN_ERROR_01.getErrorMessage());
-		
-		ForgotPasswordResponse forgetPasswordResponse =new ForgotPasswordResponse();
+
+		ForgotPasswordResponse forgetPasswordResponse = new ForgotPasswordResponse();
 		forgetPasswordResponse.setUiMessage("Your password has been sent over to your email id");
 		return forgetPasswordResponse;
+	}
+
+	@Override
+	public String generateToken(TokenDetailsDto tokenGenedationDto) throws SwdnException {
+		return null;
 	}
 
 }

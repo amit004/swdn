@@ -6,14 +6,16 @@ import com.swdn.model.request.LoginRequest;
 import com.swdn.model.response.ForgotPasswordResponse;
 import com.swdn.model.response.LoginResponse;
 import com.swdn.model.response.LogoutResponse;
+import com.swdn.modle.dto.TokenDetailsDto;
 
 public interface UserService {
 
-	public LoginResponse doLogin(LoginRequest loginRequest) throws SwdnException;
+	public LoginResponse doLogin(LoginRequest loginRequest,TokenDetailsDto tokenDetails) throws SwdnException;
 	
 	public LogoutResponse doLogout(String userToken) throws SwdnException;
 
 	public ForgotPasswordResponse forgetPassword(ForgetPasswordRequest userToken) throws SwdnException;
 
+	public String generateToken(TokenDetailsDto tokenGenedationDto) throws SwdnException;
 	
 }

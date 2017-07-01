@@ -8,17 +8,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.swdn.dao.SeptDao;
+import com.swdn.entity.SeptEntity;
 import com.swdn.entity.SeptUpload;
+import com.swdn.exception.SwdnException;
 import com.swdn.model.request.SeptUploadRequest;
 
 @Repository
 @Transactional
 public class SeptDaoImpl implements SeptDao{
+	
 	@Autowired
 	private SessionFactory sessionFactory;
 
 	@Override
-	public void setSeptDetails(SeptUploadRequest septuploadRequest) {
+	public void submitSeptDetails(SeptUploadRequest septuploadRequest) {
 		Session session = getSession();
 		SeptUpload septUploadEntity = new SeptUpload();
 		septUploadEntity.setUserId(septuploadRequest.getUserID());
@@ -40,13 +43,22 @@ public class SeptDaoImpl implements SeptDao{
 		septUploadEntity.setEndTime("");
 		septUploadEntity.setAttemptDate("2017-10-22 12:00:23");
 		septUploadEntity.setAcademicYear("");
-		//session.save(septUploadEntity);
-		session.saveOrUpdate(septUploadEntity);
+		session.save(septUploadEntity);
 		
 	}
 
 	private Session getSession() {
 		return sessionFactory.getCurrentSession();
+	}
+
+	@Override
+	public void startSeptFOrUser(SeptUploadRequest septuploadRequest) throws SwdnException {
+		
+	}
+
+	@Override
+	public SeptEntity getSeptDetails(SeptUploadRequest septuploadRequest) throws SwdnException {
+		return null;
 	}
 
 }

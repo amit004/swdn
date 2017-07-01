@@ -1,6 +1,5 @@
 package com.swdn.controller;
 
-
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
@@ -17,6 +16,7 @@ import com.swdn.logger.SwdnLogger;
 import com.swdn.model.request.ForgetPasswordRequest;
 import com.swdn.model.request.LoginRequest;
 import com.swdn.model.response.SwdnResponse;
+import com.swdn.modle.dto.TokenDetailsDto;
 import com.swdn.service.UserService;
 import com.swdn.utils.SwdnUtils;
 
@@ -34,13 +34,35 @@ public class LoginController {
 	SwdnUtils swdnUtils;
 
 	@RequestMapping(value = "login", method = RequestMethod.POST)
-	public SwdnResponse login(@Valid @RequestBody LoginRequest loginRequest, BindingResult bindingResult) {
+	public SwdnResponse login(@Valid @RequestBody LoginRequest loginRequest, BindingResult bindingResult,
+			HttpServletRequest servletRequest) {
 
 		if (bindingResult.hasErrors()) {
 			return swdnUtils.handleValidationException(SwdnErrors.SWDN_LOGIN_VALIDATION_ERR_00, bindingResult);
 		}
+
+		String ipAddress, agentName;
+
+		agentName = servletRequest.getHeader("agent");
+		ipAddress = servletRequest.getRemoteAddr();
+
 		try {
-			return swdnUtils.getResponse(userService.doLogin(loginRequest), null);
+
+			if (agentName == null) {
+				throw new SwdnException(SwdnErrors.SWDN_HEADERS_ERROR_01.name(),
+						SwdnErrors.SWDN_HEADERS_ERROR_01.getErrorMessage(),
+						SwdnErrors.SWDN_HEADERS_ERROR_01.getErrorMessage());
+			}
+
+			if (ipAddress == null) {
+				ipAddress = servletRequest.getHeader("X-FORWARDED-FOR");
+			}
+
+			TokenDetailsDto tokenDetails = new TokenDetailsDto();
+			tokenDetails.setLoginIp(servletRequest.getRemoteAddr());
+			tokenDetails.setAgent(agentName);
+
+			return swdnUtils.getResponse(userService.doLogin(loginRequest, tokenDetails), null);
 		} catch (SwdnException exception) {
 			swdnLogger.logException(LoginController.class.getSimpleName(), exception);
 			return swdnUtils.getResponse(null, exception);
@@ -69,12 +91,13 @@ public class LoginController {
 	}
 
 	@RequestMapping(value = "forgotPassword", method = RequestMethod.POST)
-	public SwdnResponse forgetPass(@RequestBody @Valid ForgetPasswordRequest forgetPasswordRequest,BindingResult bindingResult) {
+	public SwdnResponse forgetPass(@RequestBody @Valid ForgetPasswordRequest forgetPasswordRequest,
+			BindingResult bindingResult) {
 
 		if (bindingResult.hasErrors()) {
 			return swdnUtils.handleValidationException(SwdnErrors.SWDN_LOGIN_VALIDATION_ERR_00, bindingResult);
 		}
-		
+
 		try {
 			return swdnUtils.getResponse(userService.forgetPassword(forgetPasswordRequest), null);
 		} catch (SwdnException exception) {
@@ -82,7 +105,6 @@ public class LoginController {
 			return swdnUtils.getResponse(null, exception);
 		}
 	}
-	
 
 	@RequestMapping(value = "healthCheck", method = RequestMethod.GET)
 	public String healthCheck() {
