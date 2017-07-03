@@ -71,18 +71,8 @@ public class UserDaoImpl implements UserDao {
 	}
 
 	@Override
-	public void setUserStatusLogout(String userToken) throws SwdnException {
+	public void setUserStatusLogout(UserSessionEntity userSessionEntity){
 		Session session = getSession();
-		UserSessionEntity userSessionEntity = null;
-		Criteria criteria = session.createCriteria(UserSessionEntity.class);
-		userSessionEntity = (UserSessionEntity) criteria.add(Restrictions.eq("loginSessionId", userToken))
-				.uniqueResult();
-
-		if (userSessionEntity == null)
-			throw new SwdnException(SwdnErrors.SWDN_TOKEN_ERROR_01.name(),
-					SwdnErrors.SWDN_TOKEN_ERROR_01.getErrorMessage(), SwdnErrors.SWDN_TOKEN_ERROR_01.getErrorMessage());
-
-		userSessionEntity.setLoginSessionId("");
 		session.update(userSessionEntity);
 	}
 

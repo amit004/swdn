@@ -18,7 +18,7 @@ public interface UserDao {
 
 	public UserDetailsEntity getUserDetailedInfo(Integer integer);
 
-	public void setUserStatusLogout(String userToken) throws SwdnException;
+	public void setUserStatusLogout(UserSessionEntity userSessionEntity);
 
 	public SeptEntityStatus getSeptDetails(Integer userId);
 

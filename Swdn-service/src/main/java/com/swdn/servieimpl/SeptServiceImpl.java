@@ -15,6 +15,7 @@ import com.swdn.entity.StudentEntity;
 import com.swdn.entity.User;
 import com.swdn.entity.UserDetailsEntity;
 import com.swdn.entity.UserSessionEntity;
+import com.swdn.error.SwdnErrors;
 import com.swdn.exception.SwdnException;
 import com.swdn.model.request.SeptSubmissionRequest;
 import com.swdn.model.response.SeptResponse;
@@ -35,6 +36,11 @@ public class SeptServiceImpl implements SeptService {
 
 		UserSessionEntity userSessionEntity = userDao.getUserDetailsByToken(userToken);
 
+		if(userSessionEntity==null){
+			throw new SwdnException(SwdnErrors.SWDN_TOKEN_ERROR_01.name(),
+					SwdnErrors.SWDN_TOKEN_ERROR_01.getErrorMessage(), SwdnErrors.SWDN_TOKEN_ERROR_01.getErrorMessage());
+		}
+		
 		StudentEntity studentDetails = userDao.getStudentDetails(userSessionEntity.getUserId());
 
 		Calendar calendar = Calendar.getInstance();

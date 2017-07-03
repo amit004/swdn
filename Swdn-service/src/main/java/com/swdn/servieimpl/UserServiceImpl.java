@@ -13,6 +13,7 @@ import com.swdn.entity.SeptEntityStatus;
 import com.swdn.entity.StudentEntity;
 import com.swdn.entity.User;
 import com.swdn.entity.UserDetailsEntity;
+import com.swdn.entity.UserSessionEntity;
 import com.swdn.error.SwdnErrors;
 import com.swdn.exception.SwdnException;
 import com.swdn.model.request.ForgetPasswordRequest;
@@ -123,7 +124,17 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public LogoutResponse doLogout(String userToken) throws SwdnException {
-		userDao.setUserStatusLogout(userToken);
+
+		UserSessionEntity userSessionEntity = userDao.getUserDetailsByToken(userToken);
+
+		if (userSessionEntity == null)
+			throw new SwdnException(SwdnErrors.SWDN_TOKEN_ERROR_01.name(),
+					SwdnErrors.SWDN_TOKEN_ERROR_01.getErrorMessage(), SwdnErrors.SWDN_TOKEN_ERROR_01.getErrorMessage());
+
+		userSessionEntity.setLoginSessionId("");
+
+		userDao.setUserStatusLogout(userSessionEntity);
+
 		LogoutResponse logoutResponse = new LogoutResponse();
 		logoutResponse.setUiMessage("User has been logged out successfully");
 		return logoutResponse;
