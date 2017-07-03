@@ -8,33 +8,51 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.swdn.error.SwdnErrors;
 import com.swdn.exception.SwdnException;
-import com.swdn.model.request.SeptUploadRequest;
+import com.swdn.logger.SwdnLogger;
+import com.swdn.model.request.SeptSubmissionRequest;
 import com.swdn.model.response.SwdnResponse;
 import com.swdn.service.SeptService;
 import com.swdn.utils.SwdnUtils;
 
 @RestController
-@RequestMapping(value="v1")
+@RequestMapping(value = "v1")
 public class SeptController {
 
-	
 	@Autowired
 	SeptService septService;
-	
+
 	@Autowired
 	SwdnUtils swdnUtils;
-	
-	@RequestMapping(value="startSept",method=RequestMethod.GET)
-	public  SwdnResponse startSept(HttpServletRequest httpServletRequest){
-		String token=httpServletRequest.getHeader("userToken");
+
+	@Autowired
+	SwdnLogger swdnLogger;
+
+	@RequestMapping(value = "startSept", method = RequestMethod.GET)
+	public SwdnResponse startSept(HttpServletRequest httpServletRequest) {
+		String token = httpServletRequest.getHeader("userToken");
 		return null;
 	}
-	
 
 	@RequestMapping(value = "submitSept", method = RequestMethod.POST)
-	public SwdnResponse septUpload(@RequestBody SeptUploadRequest septuploadRequest) throws SwdnException{
-		// added method to parse values from json to arraylist.
-		return swdnUtils.getResponse(septService.submitSeptDetails(septuploadRequest), null);
+	public SwdnResponse septUpload(@RequestBody SeptSubmissionRequest septuploadRequest,
+			HttpServletRequest servletRequest) throws SwdnException {
+
+		try {
+			String userToken = servletRequest.getHeader("userToken");
+
+			if (userToken == null) {
+				return swdnUtils.getResponse(null,
+						new SwdnException(SwdnErrors.SWDN_LOGOUT_ERROR_01.name(),
+								SwdnErrors.SWDN_LOGOUT_ERROR_01.getErrorMessage(),
+								SwdnErrors.SWDN_LOGOUT_ERROR_01.getErrorMessage()));
+			}
+			return swdnUtils.getResponse(septService.submitSeptDetails(septuploadRequest, userToken), null);
+
+		} catch (SwdnException exception) {
+			swdnLogger.logException(SeptController.class.getSimpleName(), exception);
+			return swdnUtils.getResponse(null, exception);
+		}
 	}
 }

@@ -2,16 +2,17 @@ package com.swdn.servieimpl;
 
 import java.util.Calendar;
 import java.util.TimeZone;
-import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.swdn.constants.SeptStatus;
+import com.swdn.constants.UserType;
 import com.swdn.dao.UserDao;
-import com.swdn.entity.SeptEntity;
+import com.swdn.entity.SeptEntityStatus;
+import com.swdn.entity.StudentEntity;
 import com.swdn.entity.User;
-import com.swdn.entity.UserEntity;
+import com.swdn.entity.UserDetailsEntity;
 import com.swdn.error.SwdnErrors;
 import com.swdn.exception.SwdnException;
 import com.swdn.model.request.ForgetPasswordRequest;
@@ -46,37 +47,44 @@ public class UserServiceImpl implements UserService {
 					SwdnErrors.SWDN_ERROR_02.getErrorMessage());
 		}
 
-		UserEntity userEntity = userDao.getUserDetailedInfo(userDto.getId());
+		LoginResponse loginResponse = null;
 
-		if (userEntity == null) {
-			throw new SwdnException(SwdnErrors.SWDN_ERROR_01.name(), SwdnErrors.SWDN_ERROR_01.getErrorMessage(),
-					SwdnErrors.SWDN_ERROR_01.getErrorMessage());
+		if (userDto.getUserType().equalsIgnoreCase(UserType.STUDENT.getUserType())) {
+
+			StudentEntity studentEntity = userDao.getStudentDetails(userDto.getId());
+
+			if (studentEntity == null) {
+				throw new SwdnException(SwdnErrors.SWDN_ERROR_01.name(), SwdnErrors.SWDN_ERROR_01.getErrorMessage(),
+						SwdnErrors.SWDN_ERROR_01.getErrorMessage());
+			}
+
+			loginResponse = getStudentResponse(studentEntity);
+
+			SeptEntityStatus sept = userDao.getSeptDetails(userDto.getId());
+			if (sept != null) {
+				if (sept.getSeptStatus().equalsIgnoreCase(SeptStatus.COMPLETED.name()))
+					loginResponse.setIsSeptCompleted(true);
+
+				else if (sept.getSeptStatus().equalsIgnoreCase(SeptStatus.STARTED.name()))
+					throw new SwdnException(SwdnErrors.SWDN_ERROR_03.name(), SwdnErrors.SWDN_ERROR_03.getErrorMessage(),
+							SwdnErrors.SWDN_ERROR_03.getErrorMessage());
+			}
+
+		} else {
+
+			UserDetailsEntity userEntity = userDao.getUserDetailedInfo(userDto.getId());
+
+			if (userEntity == null) {
+				throw new SwdnException(SwdnErrors.SWDN_ERROR_01.name(), SwdnErrors.SWDN_ERROR_01.getErrorMessage(),
+						SwdnErrors.SWDN_ERROR_01.getErrorMessage());
+			}
+			loginResponse = getUserResponse(userEntity);
 		}
 
-		SeptEntity sept = userDao.getSeptDetails(userDto.getId());
-
-		LoginResponse loginResponse = new LoginResponse();
-		loginResponse.setEmail(userDto.getEmail());
-		loginResponse.setFirstName(userEntity.getFirstName());
-		loginResponse.setLastName(userEntity.getLastName());
-		loginResponse.setStatus(userDto.getUserStatus());
-		loginResponse.setUserId(userDto.getId());
-		loginResponse.setIsSeptCompleted(false);
-		loginResponse.setUserName(userDto.getUserName());
-
-		if (sept != null) {
-
-			if (sept.getSeptStatus().equalsIgnoreCase(SeptStatus.COMPLETED.name()))
-				loginResponse.setIsSeptCompleted(true);
-
-			else if (sept.getSeptStatus().equalsIgnoreCase(SeptStatus.STARTED.name()))
-				throw new SwdnException(SwdnErrors.SWDN_ERROR_03.name(), SwdnErrors.SWDN_ERROR_03.getErrorMessage(),
-						SwdnErrors.SWDN_ERROR_03.getErrorMessage());
-		}
+		loginResponse.setUserType(userDto.getUserType());
 
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTimeZone(TimeZone.getTimeZone("Asia/Calcutta"));
-
 
 		calendar.add(Calendar.MONTH, 1);
 
@@ -89,6 +97,30 @@ public class UserServiceImpl implements UserService {
 		return loginResponse;
 	}
 
+	private LoginResponse getStudentResponse(StudentEntity studentEntity) {
+
+		LoginResponse loginResponse = new LoginResponse();
+		loginResponse.setEmail(studentEntity.getEmail());
+		loginResponse.setFirstName(studentEntity.getFirstName());
+		loginResponse.setLastName(studentEntity.getLastName());
+		loginResponse.setIsSeptCompleted(false);
+		loginResponse.setUserName(studentEntity.getUserName());
+		return loginResponse;
+
+	}
+
+	private LoginResponse getUserResponse(UserDetailsEntity userEntity) {
+
+		LoginResponse loginResponse = new LoginResponse();
+		loginResponse.setEmail(userEntity.getEmail());
+		loginResponse.setFirstName(userEntity.getFirstName());
+		loginResponse.setLastName(userEntity.getLastName());
+		loginResponse.setIsSeptCompleted(false);
+		loginResponse.setUserName(userEntity.getUserName());
+		return loginResponse;
+
+	}
+
 	@Override
 	public LogoutResponse doLogout(String userToken) throws SwdnException {
 		userDao.setUserStatusLogout(userToken);
@@ -96,7 +128,6 @@ public class UserServiceImpl implements UserService {
 		logoutResponse.setUiMessage("User has been logged out successfully");
 		return logoutResponse;
 	}
-
 
 	@Override
 	public ForgotPasswordResponse forgetPassword(ForgetPasswordRequest forgetPassRequest) throws SwdnException {

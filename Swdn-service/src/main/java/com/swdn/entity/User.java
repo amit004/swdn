@@ -31,7 +31,7 @@ public class User implements Serializable {
 	@Column(name = "e_mail")
 	private String email;
 
-	@Column(name = "user_type")
+	@Column(name = "user_type_desc")
 	private String userType;
 
 	@Column(name = "user_status")

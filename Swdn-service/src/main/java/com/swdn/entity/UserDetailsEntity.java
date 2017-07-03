@@ -11,32 +11,37 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name="mst_user")
-public class UserEntity {
-	
+@Table(name = "mst_user")
+public class UserDetailsEntity {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	@Column(name="user_id")
+	@Column(name = "user_id")
 	private Integer Id;
 
-	@Column(name="first_name")
+	@Column(name = "first_name")
 	private String firstName;
-	
-	@Column(name="middle_name")
+
+	@Column(name = "middle_name")
 	private String middleName;
-	
-	@Column(name="last_name")
+
+	@Column(name = "last_name")
 	private String lastName;
-	
-	@Column(name="user_name")
+
+	@Column(name = "user_name")
 	private String userName;
 
+	@Column(name = "e_mail")
+	private String email;
+
 	private String photo;
-	
+
 	private String status;
-	
-	@Column(name="user_reference_id")
+
+	@Column(name = "user_reference_id")
 	private Integer userReferenceId;
-	
-	
+
+	@Column(name = "user_type_desc")
+	private String userType;
+
 }

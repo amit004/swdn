@@ -1,15 +1,20 @@
 package com.swdn.dao;
 
-import com.swdn.entity.SeptEntity;
+import com.swdn.entity.SeptDetailsEntity;
+import com.swdn.entity.SeptEntityStatus;
+import com.swdn.entity.SeptQuestionEntity;
 import com.swdn.exception.SwdnException;
-import com.swdn.model.request.SeptUploadRequest;
+import com.swdn.model.request.SeptSubmissionRequest;
 
 public interface SeptDao {
 
-	public void submitSeptDetails(SeptUploadRequest septuploadRequest) throws SwdnException;
+	public void submitSept(SeptDetailsEntity septuploadRequest) throws SwdnException;
 
-	public SeptEntity getSeptDetails(SeptUploadRequest septuploadRequest) throws SwdnException;
+	public SeptEntityStatus getSeptStatus(SeptSubmissionRequest septuploadRequest) throws SwdnException;
 
-	public void startSeptFOrUser(SeptUploadRequest septuploadRequest) throws SwdnException;
+	public void startSeptForUser(SeptSubmissionRequest septuploadRequest) throws SwdnException;
+	
+	public SeptQuestionEntity getSeptQuestionsById(Integer id) throws SwdnException;
+
 
 }

@@ -10,7 +10,7 @@ import lombok.Data;
 @Entity
 @Table(name = "usr_sept_status")
 @Data
-public class SeptEntity {
+public class SeptEntityStatus {
 
 	@Column(name = "user_id")
 	@Id

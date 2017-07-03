@@ -2,63 +2,55 @@ package com.swdn.dao.impl;
 
 import javax.transaction.Transactional;
 
+import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.swdn.dao.SeptDao;
-import com.swdn.entity.SeptEntity;
-import com.swdn.entity.SeptUpload;
+import com.swdn.entity.SeptDetailsEntity;
+import com.swdn.entity.SeptEntityStatus;
+import com.swdn.entity.SeptQuestionEntity;
 import com.swdn.exception.SwdnException;
-import com.swdn.model.request.SeptUploadRequest;
+import com.swdn.model.request.SeptSubmissionRequest;
 
 @Repository
 @Transactional
-public class SeptDaoImpl implements SeptDao{
-	
+public class SeptDaoImpl implements SeptDao {
+
 	@Autowired
 	private SessionFactory sessionFactory;
-
-	@Override
-	public void submitSeptDetails(SeptUploadRequest septuploadRequest) {
-		Session session = getSession();
-		SeptUpload septUploadEntity = new SeptUpload();
-		septUploadEntity.setUserId(septuploadRequest.getUserID());
-		septUploadEntity.setQuestionID(septuploadRequest.getQuestion_id());
-		septUploadEntity.setQuestionSequence(septuploadRequest.getQuestion_sequence());
-		septUploadEntity.setRightAnswerText(septuploadRequest.getQuestion_answer());
-		septUploadEntity.setRightAnswerID(septuploadRequest.getQuestion_answer_option());
-		// need to add more fields
-		septUploadEntity.setAnswer("");
-		septUploadEntity.setAnswerText("");
-		septUploadEntity.setAnswerResult(2);
-		septUploadEntity.setStudentEnroll("");
-		septUploadEntity.setStudentName("");
-		septUploadEntity.setSchoolName("");
-		septUploadEntity.setSchoolCode("");
-		septUploadEntity.setClassID(0);
-		septUploadEntity.setSection("");
-		septUploadEntity.setStartTime("");
-		septUploadEntity.setEndTime("");
-		septUploadEntity.setAttemptDate("2017-10-22 12:00:23");
-		septUploadEntity.setAcademicYear("");
-		session.save(septUploadEntity);
-		
-	}
 
 	private Session getSession() {
 		return sessionFactory.getCurrentSession();
 	}
 
 	@Override
-	public void startSeptFOrUser(SeptUploadRequest septuploadRequest) throws SwdnException {
+	public SeptEntityStatus getSeptStatus(SeptSubmissionRequest septuploadRequest) throws SwdnException {
+
+		return null;
+	}
+
+	@Override
+	public void submitSept(SeptDetailsEntity septDetailsEntity) throws SwdnException {
+		getSession().save(septDetailsEntity);
+	}
+
+	@Override
+	public void startSeptForUser(SeptSubmissionRequest septuploadRequest) throws SwdnException {
 		
 	}
 
 	@Override
-	public SeptEntity getSeptDetails(SeptUploadRequest septuploadRequest) throws SwdnException {
-		return null;
+	public SeptQuestionEntity getSeptQuestionsById(Integer id) throws SwdnException {
+
+		Criteria criteria = getSession().createCriteria(SeptQuestionEntity.class);
+		SeptQuestionEntity septQuestionEntity = (SeptQuestionEntity) criteria.add(Restrictions.eq("id", id))
+				.uniqueResult();
+
+		return septQuestionEntity;
 	}
 
 }
