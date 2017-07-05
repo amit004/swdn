@@ -31,16 +31,30 @@ public class SeptController {
 
 	@RequestMapping(value = "startSept", method = RequestMethod.GET)
 	public SwdnResponse startSept(HttpServletRequest httpServletRequest) {
-		String token = httpServletRequest.getHeader("userToken");
-		return null;
+
+		try {
+			String userToken = httpServletRequest.getHeader("userToken");
+
+			if (userToken == null) {
+				return swdnUtils.getResponse(null,
+						new SwdnException(SwdnErrors.SWDN_LOGOUT_ERROR_01.name(),
+								SwdnErrors.SWDN_LOGOUT_ERROR_01.getErrorMessage(),
+								SwdnErrors.SWDN_LOGOUT_ERROR_01.getErrorMessage()));
+			}
+			return swdnUtils.getResponse(septService.startSept(userToken), null);
+
+		} catch (SwdnException exception) {
+			swdnLogger.logException(SeptController.class.getSimpleName(), exception);
+			return swdnUtils.getResponse(null, exception);
+		}
 	}
 
 	@RequestMapping(value = "submitSept", method = RequestMethod.POST)
 	public SwdnResponse septUpload(@RequestBody SeptSubmissionRequest septuploadRequest,
-			HttpServletRequest servletRequest) throws SwdnException {
+			HttpServletRequest httpServletRequest) throws SwdnException {
 
 		try {
-			String userToken = servletRequest.getHeader("userToken");
+			String userToken = httpServletRequest.getHeader("userToken");
 
 			if (userToken == null) {
 				return swdnUtils.getResponse(null,

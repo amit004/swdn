@@ -13,7 +13,10 @@ public enum SwdnErrors {
 
 	SWDN_LOGOUT_ERROR_01("User Token is null"),
 
-	SWDN_HEADERS_ERROR_01("agent name  is missing in headers");
+	SWDN_HEADERS_ERROR_01("agent name  is missing in headers"),
+	
+	SWDN_SEPT_ERROR_01("SEPT Details not found for user");
+
 
 	@Getter
 	private String errorMessage;

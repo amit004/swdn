@@ -25,4 +25,7 @@ public class SeptQuestionEntity {
 	@Column(name="answer")
 	private String answer;
 		
+	@Column(name="avk_category")
+	private String avkCategory;
+	
 }
