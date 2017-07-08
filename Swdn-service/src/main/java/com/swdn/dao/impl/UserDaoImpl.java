@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.swdn.dao.UserDao;
-import com.swdn.entity.SeptEntityStatus;
 import com.swdn.entity.StudentEntity;
 import com.swdn.entity.User;
 import com.swdn.entity.UserDetailsEntity;
@@ -44,11 +43,7 @@ public class UserDaoImpl implements UserDao {
 		return sessionFactory.getCurrentSession();
 	}
 
-	@Override
-	public SeptEntityStatus getSeptDetails(Integer studentId) {
-		return (SeptEntityStatus) getSession().createQuery("from SeptEntityStatus where studentId = :studentId")
-				.setParameter("studentId", studentId).uniqueResult();
-	}
+	
 
 	@Override
 	public void setUserLoginStatus(UserSessionEntity userSession) {

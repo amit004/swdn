@@ -21,8 +21,6 @@ public interface UserDao {
 
 	void setUserStatusLogout(UserSessionEntity userSessionEntity);
 
-	SeptEntityStatus getSeptDetails(Integer userId);
-
 	void setUserLoginStatus(UserSessionEntity userSessionEntity);
 
 	StudentEntity getStudentDetails(Integer userId) throws SwdnException;

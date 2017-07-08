@@ -1,11 +1,14 @@
 package com.swdn.servieimpl;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.TimeZone;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.swdn.constants.SeptProfile;
@@ -21,6 +24,7 @@ import com.swdn.entity.StudentEntity;
 import com.swdn.entity.UserSessionEntity;
 import com.swdn.error.SwdnErrors;
 import com.swdn.exception.SwdnException;
+import com.swdn.logger.SwdnLogger;
 import com.swdn.model.request.SeptSubmissionRequest;
 import com.swdn.model.response.SeptResponse;
 import com.swdn.model.response.SeptSubmissionResponse;
@@ -37,11 +41,17 @@ public class SeptServiceImpl implements SeptService {
 	@Autowired
 	UserDao userDao;
 
+	@Autowired
+	SwdnLogger swdnLogger;
+
+	@Value("${SEPT.submission.time.diff}")
+	int septSubmissionTImeDiff;
+
 	public SeptSubmissionResponse submitSeptDetails(SeptSubmissionRequest septuploadRequest, String userToken)
 			throws SwdnException {
 
-		if (septuploadRequest.getSeptSubmission().isEmpty() || septuploadRequest.getSeptSubmission().size()<9
-				|| septuploadRequest.getSeptSubmission().size()>9) {
+		if (septuploadRequest.getSeptSubmission().isEmpty() || septuploadRequest.getSeptSubmission().size() < 9
+				|| septuploadRequest.getSeptSubmission().size() > 9) {
 			throw new SwdnException(SwdnErrors.SWDN_SEPT_ERROR_00.name(),
 					SwdnErrors.SWDN_SEPT_ERROR_00.getErrorMessage(), SwdnErrors.SWDN_SEPT_ERROR_00.getErrorMessage());
 		}
@@ -55,16 +65,43 @@ public class SeptServiceImpl implements SeptService {
 
 		StudentEntity studentDetails = userDao.getStudentDetails(userSessionEntity.getUserId());
 
-		SeptEntityStatus septEntityStatus = userDao.getSeptDetails(studentDetails.getStudentId());
-		
-		String startedTime=septEntityStatus.getStartedDate();
+		SeptEntityStatus septEntityStatus = septDao.getSeptStatusDetails(studentDetails.getStudentId());
 
+		if (septEntityStatus == null) {
+			throw new SwdnException(SwdnErrors.SWDN_SEPT_ERROR_05.name(),
+					SwdnErrors.SWDN_SEPT_ERROR_05.getErrorMessage(), SwdnErrors.SWDN_SEPT_ERROR_05.getErrorMessage());
+		}
+
+		else if (septEntityStatus.getSeptStatus().equalsIgnoreCase(SeptStatus.COMPLETED.name())) {
+
+			throw new SwdnException(SwdnErrors.SWDN_SEPT_ERROR_03.name(),
+					SwdnErrors.SWDN_SEPT_ERROR_03.getErrorMessage(), SwdnErrors.SWDN_SEPT_ERROR_03.getErrorMessage());
+		}
+
+		String startedTime = septEntityStatus.getStartedDate();
+
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date septStartedTime;
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTimeZone(TimeZone.getTimeZone("Asia/Calcutta"));
 
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
 		String attemptDate = sdf.format(calendar.getTime());
+
+		try {
+			septStartedTime = sdf.parse(startedTime);
+		} catch (ParseException e) {
+			swdnLogger.debug(this.getClass().getSimpleName(), e.getMessage());
+			throw new SwdnException(SwdnErrors.SWDN_SEPT_ERROR_03.name(), e.getMessage(), e.getMessage());
+		}
+
+		long diff = septStartedTime.getTime() - calendar.getTime().getTime();
+
+		long diffMinutes = diff / (60 * 1000) % 60;
+
+		if (diffMinutes > septSubmissionTImeDiff) {
+			throw new SwdnException(SwdnErrors.SWDN_SEPT_ERROR_04.name(),
+					SwdnErrors.SWDN_SEPT_ERROR_04.getErrorMessage(), SwdnErrors.SWDN_SEPT_ERROR_04.getErrorMessage());
+		}
 
 		for (SeptQuestionDto septQuestion : septuploadRequest.getSeptSubmission()) {
 
@@ -101,6 +138,9 @@ public class SeptServiceImpl implements SeptService {
 
 			septDao.submitSept(septDetailsEntity);
 		}
+
+		septEntityStatus.setSeptStatus(SeptStatus.COMPLETED.name());
+		septDao.startSeptForUser(septEntityStatus);
 
 		SeptSubmissionResponse septResponse = generateSeptReport(studentDetails.getStudentId());
 
@@ -164,10 +204,10 @@ public class SeptServiceImpl implements SeptService {
 
 		// generate percentage for each category
 		// for audio
-		 float  percentage;
+		float percentage;
 
 		if (auditoryResult.getTotalAttempted() != 0) {
-			percentage = (auditoryResult.getCorrectAttemepted()*100) / auditoryResult.getTotalAttempted();
+			percentage = (auditoryResult.getCorrectAttemepted() * 100) / auditoryResult.getTotalAttempted();
 			auditoryResult.setPercentage(percentage);
 		}
 
@@ -175,7 +215,7 @@ public class SeptServiceImpl implements SeptService {
 
 		// for visual
 		if (visualResult.getTotalAttempted() != 0) {
-			percentage = (visualResult.getCorrectAttemepted() * 100)/ visualResult.getTotalAttempted();
+			percentage = (visualResult.getCorrectAttemepted() * 100) / visualResult.getTotalAttempted();
 			visualResult.setPercentage(percentage);
 		}
 
@@ -193,35 +233,33 @@ public class SeptServiceImpl implements SeptService {
 
 		if (result != null)
 			septSubmissionResponse.setResultStatement(result.getStatements());
-		
-		int correctAttemtped=kinestheticResult.getCorrectAttemepted()+auditoryResult.getCorrectAttemepted()+visualResult.getCorrectAttemepted();
-		
-		
-		percentage=(correctAttemtped * 100)/septSubmissionResponse.getTotalQuestions();
-		
+
+		int correctAttemtped = kinestheticResult.getCorrectAttemepted() + auditoryResult.getCorrectAttemepted()
+				+ visualResult.getCorrectAttemepted();
+
+		percentage = (correctAttemtped * 100) / septSubmissionResponse.getTotalQuestions();
+
 		septSubmissionResponse.setNetResultPercentage(percentage);
 		septSubmissionResponse.setCorrectAnswerAttempted(correctAttemtped);
 		septSubmissionResponse.setSeptProfile(getProfile(correctAttemtped));
 
 		return septSubmissionResponse;
 	}
-	
-	
-	
-	private String getProfile(int totalCorrectAttempted){
-		
-		if(totalCorrectAttempted<=3)
+
+	private String getProfile(int totalCorrectAttempted) {
+
+		if (totalCorrectAttempted <= 3)
 			return SeptProfile.BEGINNER.name();
-		
-		else if(totalCorrectAttempted>3 || totalCorrectAttempted<=5)
+
+		else if (totalCorrectAttempted > 3 || totalCorrectAttempted <= 5)
 			return SeptProfile.AVERAGE.name();
-		
-		else if(totalCorrectAttempted>=6 || totalCorrectAttempted<=7)
+
+		else if (totalCorrectAttempted >= 6 || totalCorrectAttempted <= 7)
 			return SeptProfile.ADVANCE.name();
-		
-		else 
+
+		else
 			return SeptProfile.PRFOICIENT.name();
-		
+
 	}
 
 	@Override
@@ -231,7 +269,7 @@ public class SeptServiceImpl implements SeptService {
 
 		StudentEntity studentEntity = userDao.getStudentDetails(user.getUserId());
 
-		SeptEntityStatus septEntityStatus = userDao.getSeptDetails(studentEntity.getStudentId());
+		SeptEntityStatus septEntityStatus = septDao.getSeptStatusDetails(studentEntity.getStudentId());
 
 		if (septEntityStatus != null && septEntityStatus.getSeptStatus().equalsIgnoreCase(SeptStatus.STARTED.name())) {
 			throw new SwdnException(SwdnErrors.SWDN_SEPT_ERROR_02.name(),
@@ -254,5 +292,16 @@ public class SeptServiceImpl implements SeptService {
 		septResponse.setFirstName(studentEntity.getFirstName());
 		septResponse.setLastName(studentEntity.getLastName());
 		return septResponse;
+	}
+
+	@Override
+	public String deleteUserSept(String token) throws SwdnException {
+
+		UserSessionEntity user = userDao.getUserSessionByToken(token);
+		StudentEntity studentEntity = userDao.getStudentDetails(user.getUserId());
+
+		septDao.deleteSept(studentEntity.getStudentId());
+
+		return "user's sept details deleted successfully";
 	}
 }

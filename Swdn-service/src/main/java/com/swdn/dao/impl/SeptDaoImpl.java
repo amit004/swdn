@@ -16,7 +16,6 @@ import com.swdn.entity.SeptDetailsEntity;
 import com.swdn.entity.SeptEntityStatus;
 import com.swdn.entity.SeptQuestionEntity;
 import com.swdn.entity.SeptResultStatementEntity;
-import com.swdn.exception.SwdnException;
 import com.swdn.model.response.SeptSubmissionResponse;
 
 @Repository
@@ -31,12 +30,12 @@ public class SeptDaoImpl implements SeptDao {
 	}
 
 	@Override
-	public void submitSept(SeptDetailsEntity septDetailsEntity) throws SwdnException {
+	public void submitSept(SeptDetailsEntity septDetailsEntity) {
 		getSession().save(septDetailsEntity);
 	}
 
 	@Override
-	public SeptQuestionEntity getSeptQuestionsById(Integer id) throws SwdnException {
+	public SeptQuestionEntity getSeptQuestionsById(Integer id) {
 		Criteria criteria = getSession().createCriteria(SeptQuestionEntity.class);
 		SeptQuestionEntity septQuestionEntity = (SeptQuestionEntity) criteria.add(Restrictions.eq("id", id))
 				.uniqueResult();
@@ -44,7 +43,7 @@ public class SeptDaoImpl implements SeptDao {
 	}
 
 	@Override
-	public ArrayList<SeptDetailsEntity> getSeptDetailsForStudent(Integer studentId) throws SwdnException {
+	public ArrayList<SeptDetailsEntity> getSeptDetailsForStudent(Integer studentId) {
 
 		Session session = getSession();
 
@@ -55,8 +54,7 @@ public class SeptDaoImpl implements SeptDao {
 	}
 
 	@Override
-	public SeptResultStatementEntity getSeptResultStatement(SeptSubmissionResponse septSubmissionResponse)
-			throws SwdnException {
+	public SeptResultStatementEntity getSeptResultStatement(SeptSubmissionResponse septSubmissionResponse) {
 
 		Criteria criteria = getSession().createCriteria(SeptResultStatementEntity.class);
 
@@ -71,7 +69,35 @@ public class SeptDaoImpl implements SeptDao {
 
 	@Override
 	public void startSeptForUser(SeptEntityStatus septEntityStatus) {
-		getSession().save(septEntityStatus);
+		getSession().saveOrUpdate(septEntityStatus);
+	}
+
+	@Override
+	public SeptEntityStatus getSeptStatusDetails(Integer studentId) {
+		return (SeptEntityStatus) getSession().createQuery("from SeptEntityStatus where studentId = :studentId")
+				.setParameter("studentId", studentId).uniqueResult();
+	}
+
+	@Override
+	public void deleteSept(Integer studentId) {
+
+		Session session = getSession();
+
+		ArrayList<SeptDetailsEntity> septDetailsEntities = getSeptDetailsForStudent(studentId);
+
+		if (septDetailsEntities != null) {
+
+			for (SeptDetailsEntity septDetailsEntity : septDetailsEntities) {
+
+				session.delete(septDetailsEntity);
+			}
+		}
+
+		SeptEntityStatus septEntityStatus = getSeptStatusDetails(studentId);
+
+		if (septEntityStatus != null)
+			session.delete(septEntityStatus);
+
 	}
 
 }

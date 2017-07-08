@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.swdn.constants.SeptStatus;
 import com.swdn.constants.UserType;
+import com.swdn.dao.SeptDao;
 import com.swdn.dao.UserDao;
 import com.swdn.entity.SeptEntityStatus;
 import com.swdn.entity.StudentEntity;
@@ -29,6 +30,9 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	UserDao userDao;
+
+	@Autowired
+	SeptDao septDao;
 
 	@Autowired
 	TokenServiceImpl tokenService;
@@ -61,7 +65,7 @@ public class UserServiceImpl implements UserService {
 
 			loginResponse = getStudentResponse(studentEntity);
 
-			SeptEntityStatus sept = userDao.getSeptDetails(userDto.getId());
+			SeptEntityStatus sept = septDao.getSeptStatusDetails(userDto.getId());
 			if (sept != null) {
 				if (sept.getSeptStatus().equalsIgnoreCase(SeptStatus.COMPLETED.name()))
 					loginResponse.setIsSeptCompleted(true);
@@ -93,7 +97,6 @@ public class UserServiceImpl implements UserService {
 
 		tokenDetails.setUserName(loginRequest.getUserName());
 
-
 		UserSessionEntity userSession = userDao.getUserSessionByUserId(userDto.getId());
 
 		if (userSession == null) {
@@ -108,7 +111,7 @@ public class UserServiceImpl implements UserService {
 			userSession.setStatus(1);
 
 		}
-		
+
 		tokenDetails = tokenService.encryptToken(tokenDetails);
 
 		userSession.setLoginSessionId(tokenDetails.getTokenString());
@@ -172,9 +175,6 @@ public class UserServiceImpl implements UserService {
 		return forgetPasswordResponse;
 	}
 
-	@Override
-	public String generateToken(TokenDetailsDto tokenGenedationDto) throws SwdnException {
-		return null;
-	}
+	
 
 }

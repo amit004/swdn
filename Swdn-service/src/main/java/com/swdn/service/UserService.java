@@ -16,6 +16,5 @@ public interface UserService {
 
 	public ForgotPasswordResponse forgetPassword(ForgetPasswordRequest userToken) throws SwdnException;
 
-	public String generateToken(TokenDetailsDto tokenGenedationDto) throws SwdnException;
 	
 }
