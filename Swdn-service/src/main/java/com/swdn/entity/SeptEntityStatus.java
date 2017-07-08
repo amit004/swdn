@@ -12,9 +12,9 @@ import lombok.Data;
 @Data
 public class SeptEntityStatus {
 
-	@Column(name = "user_id")
+	@Column(name = "student_id")
 	@Id
-	private Integer userId;
+	private Integer studentId;
 
 	@Column(name = "sept_status")
 	private String septStatus;

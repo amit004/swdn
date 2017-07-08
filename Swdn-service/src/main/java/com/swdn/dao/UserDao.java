@@ -6,24 +6,25 @@ import com.swdn.entity.User;
 import com.swdn.entity.UserDetailsEntity;
 import com.swdn.entity.UserSessionEntity;
 import com.swdn.exception.SwdnException;
-import com.swdn.modle.dto.TokenDetailsDto;
 
 public interface UserDao {
 
-	public User getUserDetails(String userName);
-	
-	public UserSessionEntity getUserDetailsByToken(String userToken) throws SwdnException;
+	User getUserDetails(String userName);
 
-	public User getUserDetailsByEmailId(String userName) throws SwdnException;
+	UserSessionEntity getUserSessionByToken(String userToken) throws SwdnException;
 
-	public UserDetailsEntity getUserDetailedInfo(Integer integer);
+	UserSessionEntity getUserSessionByUserId(Integer integer);
 
-	public void setUserStatusLogout(UserSessionEntity userSessionEntity);
+	User getUserDetailsByEmailId(String userName) throws SwdnException;
 
-	public SeptEntityStatus getSeptDetails(Integer userId);
+	UserDetailsEntity getUserDetailedInfo(Integer integer);
 
-	public void setUserLoginStatus(Integer userId, TokenDetailsDto token);
-	
+	void setUserStatusLogout(UserSessionEntity userSessionEntity);
+
+	SeptEntityStatus getSeptDetails(Integer userId);
+
+	void setUserLoginStatus(UserSessionEntity userSessionEntity);
+
 	StudentEntity getStudentDetails(Integer userId) throws SwdnException;
 
 }

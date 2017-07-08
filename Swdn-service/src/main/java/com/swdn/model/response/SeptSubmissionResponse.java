@@ -15,7 +15,7 @@ public class SeptSubmissionResponse {
 
 	private String septProfile;
 
-	private Integer netResultPercentage;
+	private float netResultPercentage;
 
 	private String resultStatement;
 

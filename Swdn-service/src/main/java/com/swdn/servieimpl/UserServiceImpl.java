@@ -93,7 +93,27 @@ public class UserServiceImpl implements UserService {
 
 		tokenDetails.setUserName(loginRequest.getUserName());
 
-		userDao.setUserLoginStatus(userDto.getId(), tokenService.encryptToken(tokenDetails));
+
+		UserSessionEntity userSession = userDao.getUserSessionByUserId(userDto.getId());
+
+		if (userSession == null) {
+			userSession = new UserSessionEntity();
+			userSession.setUserId(userDto.getId());
+			userSession.setUserTypeId(4);
+			userSession.setLoginStatus(1);
+			userSession.setSystemIp(tokenDetails.getLoginIp());
+			userSession.setAgent(tokenDetails.getAgent());
+			userSession.setAndroidGsmId("N/A");
+			userSession.setIosGsmId("N/A");
+			userSession.setStatus(1);
+
+		}
+		
+		tokenDetails = tokenService.encryptToken(tokenDetails);
+
+		userSession.setLoginSessionId(tokenDetails.getTokenString());
+
+		userDao.setUserLoginStatus(userSession);
 		loginResponse.setUserToken(tokenDetails.getTokenString());
 		return loginResponse;
 	}
@@ -125,7 +145,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public LogoutResponse doLogout(String userToken) throws SwdnException {
 
-		UserSessionEntity userSessionEntity = userDao.getUserDetailsByToken(userToken);
+		UserSessionEntity userSessionEntity = userDao.getUserSessionByToken(userToken);
 
 		if (userSessionEntity == null)
 			throw new SwdnException(SwdnErrors.SWDN_TOKEN_ERROR_01.name(),

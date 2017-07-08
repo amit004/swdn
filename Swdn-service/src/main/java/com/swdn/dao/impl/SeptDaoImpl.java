@@ -17,9 +17,7 @@ import com.swdn.entity.SeptEntityStatus;
 import com.swdn.entity.SeptQuestionEntity;
 import com.swdn.entity.SeptResultStatementEntity;
 import com.swdn.exception.SwdnException;
-import com.swdn.model.request.SeptSubmissionRequest;
 import com.swdn.model.response.SeptSubmissionResponse;
-import com.swdn.modle.dto.SeptCategoryResultDto;
 
 @Repository
 @Transactional
@@ -33,19 +31,8 @@ public class SeptDaoImpl implements SeptDao {
 	}
 
 	@Override
-	public SeptEntityStatus getSeptStatus(SeptSubmissionRequest septuploadRequest) throws SwdnException {
-
-		return null;
-	}
-
-	@Override
 	public void submitSept(SeptDetailsEntity septDetailsEntity) throws SwdnException {
 		getSession().save(septDetailsEntity);
-	}
-
-	@Override
-	public void startSeptForUser(SeptSubmissionRequest septuploadRequest) throws SwdnException {
-
 	}
 
 	@Override
@@ -59,10 +46,11 @@ public class SeptDaoImpl implements SeptDao {
 	@Override
 	public ArrayList<SeptDetailsEntity> getSeptDetailsForStudent(Integer studentId) throws SwdnException {
 
-		Criteria criteria = getSession().createCriteria(SeptDetailsEntity.class);
-		@SuppressWarnings("unchecked")
-		ArrayList<SeptDetailsEntity> seDetailsEntities = (ArrayList<SeptDetailsEntity>) criteria
-				.add(Restrictions.eq("studentId", studentId)).list();
+		Session session = getSession();
+
+		ArrayList<SeptDetailsEntity> seDetailsEntities = (ArrayList<SeptDetailsEntity>) getSession()
+				.createQuery("from SeptDetailsEntity where studentId = :studentId").setParameter("studentId", studentId)
+				.list();
 		return seDetailsEntities;
 	}
 
@@ -76,8 +64,14 @@ public class SeptDaoImpl implements SeptDao {
 				.add(Restrictions.eq("auditory", septSubmissionResponse.getAuditoryResult().getCorrectAttemepted()))
 				.add(Restrictions.eq("visual", septSubmissionResponse.getVisualResult().getCorrectAttemepted()))
 				.add(Restrictions.eq("kinesthetic",
-						septSubmissionResponse.getKinestheticResult().getCorrectAttemepted())).uniqueResult();
+						septSubmissionResponse.getKinestheticResult().getCorrectAttemepted()))
+				.uniqueResult();
 		return septResultStatementEntity;
+	}
+
+	@Override
+	public void startSeptForUser(SeptEntityStatus septEntityStatus) {
+		getSession().save(septEntityStatus);
 	}
 
 }

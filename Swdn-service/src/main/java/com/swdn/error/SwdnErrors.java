@@ -15,7 +15,12 @@ public enum SwdnErrors {
 
 	SWDN_HEADERS_ERROR_01("agent name  is missing in headers"),
 	
-	SWDN_SEPT_ERROR_01("SEPT Details not found for user");
+	SWDN_SEPT_ERROR_00("There should be 9 sept questions"),
+
+	SWDN_SEPT_ERROR_01("SEPT Details not found for student"),
+	SWDN_SEPT_ERROR_02("SEPT Already started for student"),
+	SWDN_SEPT_ERROR_03("SEPT Already completed for student");
+
 
 
 	@Getter

@@ -8,10 +8,13 @@ import java.util.TimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.swdn.constants.SeptProfile;
 import com.swdn.constants.SeptQuestionsType;
+import com.swdn.constants.SeptStatus;
 import com.swdn.dao.SeptDao;
 import com.swdn.dao.UserDao;
 import com.swdn.entity.SeptDetailsEntity;
+import com.swdn.entity.SeptEntityStatus;
 import com.swdn.entity.SeptQuestionEntity;
 import com.swdn.entity.SeptResultStatementEntity;
 import com.swdn.entity.StudentEntity;
@@ -37,7 +40,13 @@ public class SeptServiceImpl implements SeptService {
 	public SeptSubmissionResponse submitSeptDetails(SeptSubmissionRequest septuploadRequest, String userToken)
 			throws SwdnException {
 
-		UserSessionEntity userSessionEntity = userDao.getUserDetailsByToken(userToken);
+		if (septuploadRequest.getSeptSubmission().isEmpty() || septuploadRequest.getSeptSubmission().size()<9
+				|| septuploadRequest.getSeptSubmission().size()>9) {
+			throw new SwdnException(SwdnErrors.SWDN_SEPT_ERROR_00.name(),
+					SwdnErrors.SWDN_SEPT_ERROR_00.getErrorMessage(), SwdnErrors.SWDN_SEPT_ERROR_00.getErrorMessage());
+		}
+
+		UserSessionEntity userSessionEntity = userDao.getUserSessionByToken(userToken);
 
 		if (userSessionEntity == null) {
 			throw new SwdnException(SwdnErrors.SWDN_TOKEN_ERROR_01.name(),
@@ -45,6 +54,10 @@ public class SeptServiceImpl implements SeptService {
 		}
 
 		StudentEntity studentDetails = userDao.getStudentDetails(userSessionEntity.getUserId());
+
+		SeptEntityStatus septEntityStatus = userDao.getSeptDetails(studentDetails.getStudentId());
+		
+		String startedTime=septEntityStatus.getStartedDate();
 
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTimeZone(TimeZone.getTimeZone("Asia/Calcutta"));
@@ -90,6 +103,7 @@ public class SeptServiceImpl implements SeptService {
 		}
 
 		SeptSubmissionResponse septResponse = generateSeptReport(studentDetails.getStudentId());
+
 		return septResponse;
 	}
 
@@ -135,25 +149,25 @@ public class SeptServiceImpl implements SeptService {
 				visualResult.setTotalAttempted(visualResult.getTotalAttempted() + 1);
 
 				if (attemptedSept.getAnswerResult() == 1)
-					visualResult.setCorrectAttemepted(auditoryResult.getCorrectAttemepted() + 1);
+					visualResult.setCorrectAttemepted(visualResult.getCorrectAttemepted() + 1);
 			}
 
-			// for audio
+			// for Kinesthetic
 			else if (septQuestionEntity.getAvkCategory().equals(SeptQuestionsType.Kinesthetic.name())) {
 
 				kinestheticResult.setTotalAttempted(kinestheticResult.getTotalAttempted() + 1);
 
 				if (attemptedSept.getAnswerResult() == 1)
-					kinestheticResult.setCorrectAttemepted(auditoryResult.getCorrectAttemepted() + 1);
+					kinestheticResult.setCorrectAttemepted(kinestheticResult.getCorrectAttemepted() + 1);
 			}
 		}
 
 		// generate percentage for each category
 		// for audio
-		float percentage;
+		 float  percentage;
 
 		if (auditoryResult.getTotalAttempted() != 0) {
-			percentage = (auditoryResult.getCorrectAttemepted() / auditoryResult.getTotalAttempted()) * 100;
+			percentage = (auditoryResult.getCorrectAttemepted()*100) / auditoryResult.getTotalAttempted();
 			auditoryResult.setPercentage(percentage);
 		}
 
@@ -161,7 +175,7 @@ public class SeptServiceImpl implements SeptService {
 
 		// for visual
 		if (visualResult.getTotalAttempted() != 0) {
-			percentage = (visualResult.getCorrectAttemepted() / visualResult.getTotalAttempted()) * 100;
+			percentage = (visualResult.getCorrectAttemepted() * 100)/ visualResult.getTotalAttempted();
 			visualResult.setPercentage(percentage);
 		}
 
@@ -169,7 +183,7 @@ public class SeptServiceImpl implements SeptService {
 
 		// for kinesthetic
 		if (kinestheticResult.getTotalAttempted() != 0) {
-			percentage = (kinestheticResult.getCorrectAttemepted() / kinestheticResult.getTotalAttempted()) * 100;
+			percentage = (kinestheticResult.getCorrectAttemepted() * 100) / kinestheticResult.getTotalAttempted();
 			kinestheticResult.setPercentage(percentage);
 		}
 		septSubmissionResponse.setKinestheticResult(kinestheticResult);
@@ -179,12 +193,66 @@ public class SeptServiceImpl implements SeptService {
 
 		if (result != null)
 			septSubmissionResponse.setResultStatement(result.getStatements());
+		
+		int correctAttemtped=kinestheticResult.getCorrectAttemepted()+auditoryResult.getCorrectAttemepted()+visualResult.getCorrectAttemepted();
+		
+		
+		percentage=(correctAttemtped * 100)/septSubmissionResponse.getTotalQuestions();
+		
+		septSubmissionResponse.setNetResultPercentage(percentage);
+		septSubmissionResponse.setCorrectAnswerAttempted(correctAttemtped);
+		septSubmissionResponse.setSeptProfile(getProfile(correctAttemtped));
+
 		return septSubmissionResponse;
+	}
+	
+	
+	
+	private String getProfile(int totalCorrectAttempted){
+		
+		if(totalCorrectAttempted<=3)
+			return SeptProfile.BEGINNER.name();
+		
+		else if(totalCorrectAttempted>3 || totalCorrectAttempted<=5)
+			return SeptProfile.AVERAGE.name();
+		
+		else if(totalCorrectAttempted>=6 || totalCorrectAttempted<=7)
+			return SeptProfile.ADVANCE.name();
+		
+		else 
+			return SeptProfile.PRFOICIENT.name();
+		
 	}
 
 	@Override
 	public SeptResponse startSept(String token) throws SwdnException {
 
-		return null;
+		UserSessionEntity user = userDao.getUserSessionByToken(token);
+
+		StudentEntity studentEntity = userDao.getStudentDetails(user.getUserId());
+
+		SeptEntityStatus septEntityStatus = userDao.getSeptDetails(studentEntity.getStudentId());
+
+		if (septEntityStatus != null && septEntityStatus.getSeptStatus().equalsIgnoreCase(SeptStatus.STARTED.name())) {
+			throw new SwdnException(SwdnErrors.SWDN_SEPT_ERROR_02.name(),
+					SwdnErrors.SWDN_SEPT_ERROR_02.getErrorMessage(), SwdnErrors.SWDN_SEPT_ERROR_02.getErrorMessage());
+		} else if (septEntityStatus != null
+				&& septEntityStatus.getSeptStatus().equalsIgnoreCase(SeptStatus.COMPLETED.name())) {
+			throw new SwdnException(SwdnErrors.SWDN_SEPT_ERROR_03.name(),
+					SwdnErrors.SWDN_SEPT_ERROR_03.getErrorMessage(), SwdnErrors.SWDN_SEPT_ERROR_03.getErrorMessage());
+		}
+
+		septEntityStatus = new SeptEntityStatus();
+		septEntityStatus.setSeptStatus(SeptStatus.STARTED.name());
+		septEntityStatus.setStudentId(studentEntity.getStudentId());
+
+		septDao.startSeptForUser(septEntityStatus);
+
+		SeptResponse septResponse = new SeptResponse();
+		septResponse.setSeptStatus(SeptStatus.STARTED);
+		septResponse.setUserName(studentEntity.getUserName());
+		septResponse.setFirstName(studentEntity.getFirstName());
+		septResponse.setLastName(studentEntity.getLastName());
+		return septResponse;
 	}
 }

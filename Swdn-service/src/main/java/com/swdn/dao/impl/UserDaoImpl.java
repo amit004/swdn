@@ -15,9 +15,7 @@ import com.swdn.entity.StudentEntity;
 import com.swdn.entity.User;
 import com.swdn.entity.UserDetailsEntity;
 import com.swdn.entity.UserSessionEntity;
-import com.swdn.error.SwdnErrors;
 import com.swdn.exception.SwdnException;
-import com.swdn.modle.dto.TokenDetailsDto;
 
 @Repository
 @Transactional
@@ -47,26 +45,15 @@ public class UserDaoImpl implements UserDao {
 	}
 
 	@Override
-	public SeptEntityStatus getSeptDetails(Integer userId) {
-		return (SeptEntityStatus) getSession().createQuery("from SeptEntityStatus where userId = :userId")
-				.setParameter("userId", userId).uniqueResult();
+	public SeptEntityStatus getSeptDetails(Integer studentId) {
+		return (SeptEntityStatus) getSession().createQuery("from SeptEntityStatus where studentId = :studentId")
+				.setParameter("studentId", studentId).uniqueResult();
 	}
 
 	@Override
-	public void setUserLoginStatus(Integer userId, TokenDetailsDto token) {
+	public void setUserLoginStatus(UserSessionEntity userSession) {
 
-		// TODO Correct it
-		UserSessionEntity userSession = new UserSessionEntity();
-		userSession.setUserId(userId);
-		userSession.setUserTypeId(4);
-		userSession.setLoginStatus(1);
-		userSession.setLoginSessionId(token.getTokenString());
-		userSession.setSystemIp(token.getLoginIp());
-		userSession.setAgent(token.getAgent());
-		userSession.setAndroidGsmId("N/A");
-		userSession.setIosGsmId("N/A");
-		userSession.setStatus(1);
-		getSession().save(userSession);
+		getSession().saveOrUpdate(userSession);
 
 	}
 
@@ -83,7 +70,7 @@ public class UserDaoImpl implements UserDao {
 	}
 
 	@Override
-	public UserSessionEntity getUserDetailsByToken(String userToken) throws SwdnException {
+	public UserSessionEntity getUserSessionByToken(String userToken) throws SwdnException {
 		Criteria criteria = getSession().createCriteria(UserSessionEntity.class);
 		return (UserSessionEntity) criteria.add(Restrictions.eq("loginSessionId", userToken)).uniqueResult();
 	}
@@ -93,6 +80,12 @@ public class UserDaoImpl implements UserDao {
 		Criteria criteria = getSession().createCriteria(StudentEntity.class);
 		StudentEntity studentEntity = (StudentEntity) criteria.add(Restrictions.eq("userId", userId)).uniqueResult();
 		return studentEntity;
+	}
+
+	@Override
+	public UserSessionEntity getUserSessionByUserId(Integer userId) {
+		Criteria criteria = getSession().createCriteria(UserSessionEntity.class);
+		return (UserSessionEntity) criteria.add(Restrictions.eq("userId", userId)).uniqueResult();
 	}
 
 }

@@ -13,10 +13,10 @@ import lombok.Data;
 public class SeptDetailsEntity {
 	
 	@Column(name = "student_id")
-	@Id
 	private Integer studentId; 
 
 	@Column(name = "mst_id")
+	@Id
 	private int questionId;
 	
 	@Column(name = "question_sequence")

@@ -12,6 +12,5 @@ public interface SeptService {
 	public SeptSubmissionResponse submitSeptDetails(SeptSubmissionRequest septuploadRequest,String userToken) throws SwdnException;
 	
 	public SeptSubmissionResponse generateSeptReport(Integer studentId) throws SwdnException;
-
-
+	
 }
