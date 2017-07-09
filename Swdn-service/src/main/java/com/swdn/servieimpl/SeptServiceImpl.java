@@ -304,4 +304,19 @@ public class SeptServiceImpl implements SeptService {
 
 		return "user's sept details deleted successfully";
 	}
+
+	@Override
+	public SeptSubmissionResponse getSeptReport(String userToken) throws SwdnException {
+
+		UserSessionEntity userSessionEntity = userDao.getUserSessionByToken(userToken);
+
+		if (userSessionEntity == null) {
+			throw new SwdnException(SwdnErrors.SWDN_TOKEN_ERROR_01.name(),
+					SwdnErrors.SWDN_TOKEN_ERROR_01.getErrorMessage(), SwdnErrors.SWDN_TOKEN_ERROR_01.getErrorMessage());
+		}
+
+		StudentEntity studentDetails = userDao.getStudentDetails(userSessionEntity.getUserId());
+
+		return generateSeptReport(studentDetails.getStudentId());
+	}
 }

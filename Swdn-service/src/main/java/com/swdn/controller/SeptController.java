@@ -71,6 +71,26 @@ public class SeptController {
 		}
 	}
 
+	@RequestMapping(value = "getSeptReport", method = RequestMethod.GET)
+	public SwdnResponse septUpload(HttpServletRequest httpServletRequest) throws SwdnException {
+
+		try {
+			String userToken = httpServletRequest.getHeader("userToken");
+
+			if (userToken == null) {
+				return swdnUtils.getResponse(null,
+						new SwdnException(SwdnErrors.SWDN_LOGOUT_ERROR_01.name(),
+								SwdnErrors.SWDN_LOGOUT_ERROR_01.getErrorMessage(),
+								SwdnErrors.SWDN_LOGOUT_ERROR_01.getErrorMessage()));
+			}
+			return swdnUtils.getResponse(septService.getSeptReport(userToken), null);
+
+		} catch (SwdnException exception) {
+			swdnLogger.logException(SeptController.class.getSimpleName(), exception);
+			return swdnUtils.getResponse(null, exception);
+		}
+	}
+
 	@RequestMapping(value = "submitSept", method = RequestMethod.POST)
 	public SwdnResponse septUpload(@RequestBody SeptSubmissionRequest septuploadRequest,
 			HttpServletRequest httpServletRequest) throws SwdnException {
@@ -91,8 +111,7 @@ public class SeptController {
 			return swdnUtils.getResponse(null, exception);
 		}
 	}
-	
-	
+
 	@RequestMapping(value = "deleteAllSept", method = RequestMethod.GET)
 	public SwdnResponse deleteSept(HttpServletRequest httpServletRequest) throws SwdnException {
 
@@ -105,12 +124,12 @@ public class SeptController {
 								SwdnErrors.SWDN_LOGOUT_ERROR_01.getErrorMessage(),
 								SwdnErrors.SWDN_LOGOUT_ERROR_01.getErrorMessage()));
 			}
-			return swdnUtils.getResponse(septService.deleteUserSept(userToken),null);
+			return swdnUtils.getResponse(septService.deleteUserSept(userToken), null);
 
 		} catch (SwdnException exception) {
 			swdnLogger.logException(SeptController.class.getSimpleName(), exception);
 			return swdnUtils.getResponse(null, exception);
 		}
 	}
-	
+
 }

@@ -13,6 +13,8 @@ public interface SeptService {
 	
 	public SeptSubmissionResponse generateSeptReport(Integer studentId) throws SwdnException;
 	
+	public SeptSubmissionResponse getSeptReport(String userToken) throws SwdnException;
+
 	public String deleteUserSept(String token) throws SwdnException;
 	
 }
