@@ -317,6 +317,19 @@ public class SeptServiceImpl implements SeptService {
 
 		StudentEntity studentDetails = userDao.getStudentDetails(userSessionEntity.getUserId());
 
+		SeptEntityStatus septEntityStatus = septDao.getSeptStatusDetails(studentDetails.getStudentId());
+
+		if (septEntityStatus == null) {
+			throw new SwdnException(SwdnErrors.SWDN_SEPT_ERROR_05.name(),
+					SwdnErrors.SWDN_SEPT_ERROR_05.getErrorMessage(), SwdnErrors.SWDN_SEPT_ERROR_05.getErrorMessage());
+		}
+
+		else if (septEntityStatus.getSeptStatus().equalsIgnoreCase(SeptStatus.COMPLETED.name())) {
+
+			throw new SwdnException(SwdnErrors.SWDN_SEPT_ERROR_03.name(),
+					SwdnErrors.SWDN_SEPT_ERROR_03.getErrorMessage(), SwdnErrors.SWDN_SEPT_ERROR_03.getErrorMessage());
+		}
+
 		return generateSeptReport(studentDetails.getStudentId());
 	}
 }
