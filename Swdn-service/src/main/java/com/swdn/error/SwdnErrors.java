@@ -21,7 +21,9 @@ public enum SwdnErrors {
 	SWDN_SEPT_ERROR_02("SEPT Already started for student"),
 	SWDN_SEPT_ERROR_03("SEPT Already completed for student. kindly contact your admin"),
 	SWDN_SEPT_ERROR_04("SEPT Submission is not possible as you have crossed 20 mins"),
-	SWDN_SEPT_ERROR_05("SEPT is not started yet for the student");
+	SWDN_SEPT_ERROR_05("SEPT is not started yet for the student"),
+	SWDN_SEPT_ERROR_06("SEPT Report cannot be generated before submiting the sept"),
+;
 
 
 

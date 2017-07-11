@@ -65,7 +65,7 @@ public class UserServiceImpl implements UserService {
 
 			loginResponse = getStudentResponse(studentEntity);
 
-			SeptEntityStatus sept = septDao.getSeptStatusDetails(userDto.getId());
+			SeptEntityStatus sept = septDao.getSeptStatusDetails(studentEntity.getStudentId());
 			if (sept != null) {
 				if (sept.getSeptStatus().equalsIgnoreCase(SeptStatus.COMPLETED.name()))
 					loginResponse.setIsSeptCompleted(true);
@@ -129,6 +129,8 @@ public class UserServiceImpl implements UserService {
 		loginResponse.setLastName(studentEntity.getLastName());
 		loginResponse.setIsSeptCompleted(false);
 		loginResponse.setUserName(studentEntity.getUserName());
+		loginResponse.setPicUrl(studentEntity.getPhotoUrl());
+		loginResponse.setClassName(studentEntity.getClassName());
 		return loginResponse;
 
 	}
@@ -141,6 +143,7 @@ public class UserServiceImpl implements UserService {
 		loginResponse.setLastName(userEntity.getLastName());
 		loginResponse.setIsSeptCompleted(false);
 		loginResponse.setUserName(userEntity.getUserName());
+		loginResponse.setPicUrl(userEntity.getPhotoUrl());
 		return loginResponse;
 
 	}

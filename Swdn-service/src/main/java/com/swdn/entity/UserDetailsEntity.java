@@ -34,8 +34,6 @@ public class UserDetailsEntity {
 	@Column(name = "e_mail")
 	private String email;
 
-	private String photo;
-
 	private String status;
 
 	@Column(name = "user_reference_id")
@@ -43,5 +41,8 @@ public class UserDetailsEntity {
 
 	@Column(name = "user_type_desc")
 	private String userType;
+	
+	@Column(name="photo")
+	private String photoUrl;
 
 }

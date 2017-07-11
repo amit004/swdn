@@ -324,10 +324,10 @@ public class SeptServiceImpl implements SeptService {
 					SwdnErrors.SWDN_SEPT_ERROR_05.getErrorMessage(), SwdnErrors.SWDN_SEPT_ERROR_05.getErrorMessage());
 		}
 
-		else if (septEntityStatus.getSeptStatus().equalsIgnoreCase(SeptStatus.COMPLETED.name())) {
+		else if (septEntityStatus.getSeptStatus().equalsIgnoreCase(SeptStatus.STARTED.name())) {
 
-			throw new SwdnException(SwdnErrors.SWDN_SEPT_ERROR_03.name(),
-					SwdnErrors.SWDN_SEPT_ERROR_03.getErrorMessage(), SwdnErrors.SWDN_SEPT_ERROR_03.getErrorMessage());
+			throw new SwdnException(SwdnErrors.SWDN_SEPT_ERROR_06.name(),
+					SwdnErrors.SWDN_SEPT_ERROR_06.getErrorMessage(), SwdnErrors.SWDN_SEPT_ERROR_06.getErrorMessage());
 		}
 
 		return generateSeptReport(studentDetails.getStudentId());

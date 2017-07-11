@@ -16,8 +16,12 @@ public class LoginResponse {
 	private String userName;
 	
     private String userType;
+    
+    private String className;
 	
 	private Boolean isSeptCompleted;
 	
 	private String userToken;
+	
+	private String picUrl;
 }

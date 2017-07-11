@@ -48,4 +48,8 @@ public class StudentEntity {
 	@Column(name="academic_year")
 	private String academicYear;
 	
+	@Column(name="student_photo")
+	private String photoUrl;
+	
+	
 }
