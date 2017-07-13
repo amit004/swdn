@@ -297,8 +297,14 @@ public class SeptServiceImpl implements SeptService {
 	@Override
 	public String deleteUserSept(String token) throws SwdnException {
 
-		UserSessionEntity user = userDao.getUserSessionByToken(token);
-		StudentEntity studentEntity = userDao.getStudentDetails(user.getUserId());
+		UserSessionEntity userSessionEntity = userDao.getUserSessionByToken(token);
+		
+		if (userSessionEntity == null) {
+			throw new SwdnException(SwdnErrors.SWDN_TOKEN_ERROR_01.name(),
+					SwdnErrors.SWDN_TOKEN_ERROR_01.getErrorMessage(), SwdnErrors.SWDN_TOKEN_ERROR_01.getErrorMessage());
+		}
+		
+		StudentEntity studentEntity = userDao.getStudentDetails(userSessionEntity.getUserId());
 
 		septDao.deleteSept(studentEntity.getStudentId());
 

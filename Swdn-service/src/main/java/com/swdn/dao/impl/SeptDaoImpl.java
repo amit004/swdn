@@ -81,22 +81,11 @@ public class SeptDaoImpl implements SeptDao {
 	@Override
 	public void deleteSept(Integer studentId) {
 
-		Session session = getSession();
+		int updatedRows = getSession().createQuery("Delete from SeptDetailsEntity where studentId = :studentId")
+				.setParameter("studentId", studentId).executeUpdate();
 
-		ArrayList<SeptDetailsEntity> septDetailsEntities = getSeptDetailsForStudent(studentId);
-
-		if (septDetailsEntities != null) {
-
-			for (SeptDetailsEntity septDetailsEntity : septDetailsEntities) {
-
-				session.delete(septDetailsEntity);
-			}
-		}
-
-		SeptEntityStatus septEntityStatus = getSeptStatusDetails(studentId);
-
-		if (septEntityStatus != null)
-			session.delete(septEntityStatus);
+		updatedRows = getSession().createQuery("Delete from SeptEntityStatus where studentId = :studentId")
+				.setParameter("studentId", studentId).executeUpdate();
 
 	}
 
