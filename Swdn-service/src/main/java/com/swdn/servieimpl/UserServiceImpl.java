@@ -131,6 +131,16 @@ public class UserServiceImpl implements UserService {
 		loginResponse.setUserName(studentEntity.getUserName());
 		loginResponse.setPicUrl(studentEntity.getPhotoUrl());
 		loginResponse.setClassName(studentEntity.getClassName());
+		loginResponse.setAddress(studentEntity.getAddress());
+		loginResponse.setCity(studentEntity.getCity());
+		loginResponse.setState(studentEntity.getState());
+		loginResponse.setMotherName(studentEntity.getMotherName());
+		loginResponse.setFatherName(studentEntity.getFatherName());
+		loginResponse.setEmail(studentEntity.getEmail());
+		loginResponse.setPhone(studentEntity.getContactNumber());
+		loginResponse.setPincode(studentEntity.getPinCode());
+		loginResponse.setGender(studentEntity.getGender());
+		loginResponse.setSection(studentEntity.getSection());
 		return loginResponse;
 
 	}
