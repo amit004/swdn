@@ -10,6 +10,7 @@ import com.swdn.constants.SeptStatus;
 import com.swdn.constants.UserType;
 import com.swdn.dao.SeptDao;
 import com.swdn.dao.UserDao;
+import com.swdn.entity.SchoolEntity;
 import com.swdn.entity.SeptEntityStatus;
 import com.swdn.entity.StudentEntity;
 import com.swdn.entity.User;
@@ -22,6 +23,7 @@ import com.swdn.model.request.LoginRequest;
 import com.swdn.model.response.ForgotPasswordResponse;
 import com.swdn.model.response.LoginResponse;
 import com.swdn.model.response.LogoutResponse;
+import com.swdn.modle.dto.SchoolDetailsDto;
 import com.swdn.modle.dto.TokenDetailsDto;
 import com.swdn.service.UserService;
 
@@ -64,6 +66,7 @@ public class UserServiceImpl implements UserService {
 			}
 
 			loginResponse = getStudentResponse(studentEntity);
+			loginResponse.setSchoolDetails(getSchoolDetails(studentEntity.getSchoolCode()));
 
 			SeptEntityStatus sept = septDao.getSeptStatusDetails(studentEntity.getStudentId());
 			if (sept != null) {
@@ -84,6 +87,8 @@ public class UserServiceImpl implements UserService {
 						SwdnErrors.SWDN_ERROR_01.getErrorMessage());
 			}
 			loginResponse = getUserResponse(userEntity);
+			loginResponse.setSchoolDetails(getSchoolDetails(userEntity.getSchoolCode()));
+
 		}
 
 		loginResponse.setUserType(userDto.getUserType());
@@ -141,6 +146,9 @@ public class UserServiceImpl implements UserService {
 		loginResponse.setPincode(studentEntity.getPinCode());
 		loginResponse.setGender(studentEntity.getGender());
 		loginResponse.setSection(studentEntity.getSection());
+		loginResponse.setDateOfBirth(studentEntity.getDateOfBirth());
+		loginResponse.setSwadhyanEnrolNo(studentEntity.getSwaadhyanRegisterationNo());
+		loginResponse.setSchoolEnrolNo(studentEntity.getSchoolAdmissionNo());
 		return loginResponse;
 
 	}
@@ -188,6 +196,22 @@ public class UserServiceImpl implements UserService {
 		return forgetPasswordResponse;
 	}
 
-	
+	@Override
+	public SchoolDetailsDto getSchoolDetails(String schoolCode) throws SwdnException {
+
+		SchoolEntity schoolEntity = userDao.getSchollDetails(schoolCode);
+
+		if (schoolEntity == null)
+			return null;
+
+		SchoolDetailsDto schoolDetailsDto = new SchoolDetailsDto();
+		schoolDetailsDto.setContactNo(schoolEntity.getContactNo());
+		schoolDetailsDto.setSchoolAddress(schoolEntity.getSchoolAddress());
+		schoolDetailsDto.setSchoolBoard(schoolEntity.getSchoolBoard());
+		schoolDetailsDto.setSchoolName(schoolEntity.getSchoolName());
+		schoolDetailsDto.setSchoolEmail(schoolEntity.getSchoolEmail());
+
+		return schoolDetailsDto;
+	}
 
 }

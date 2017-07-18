@@ -42,8 +42,6 @@ public class StudentEntity {
 	@Column(name = "section")
 	private String section;
 
-	@Column(name = "registration_no")
-	private String enrollNo;
 
 	@Column(name = "academic_year")
 	private String academicYear;
@@ -58,19 +56,27 @@ public class StudentEntity {
 
 	@Column(name = "father_name")
 	private String fatherName;
-	
+
 	private String address;
-	
+
 	@Column(name = "city_village")
 	private String city;
-	
+
 	private String state;
-	
+
 	@Column(name = "pin_code")
 	private String pinCode;
-	
-	@Column(name= "contact_number")
+
+	@Column(name = "contact_number")
 	private String contactNumber;
-	
-	
+
+	@Column(name = "dob")
+	private String dateOfBirth;
+
+	@Column(name = "registration_no")
+	private String swaadhyanRegisterationNo;
+
+	@Column(name = "admission_no")
+	private String schoolAdmissionNo;
+
 }

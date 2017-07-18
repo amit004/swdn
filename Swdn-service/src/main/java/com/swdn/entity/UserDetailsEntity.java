@@ -41,8 +41,11 @@ public class UserDetailsEntity {
 
 	@Column(name = "user_type_desc")
 	private String userType;
-	
-	@Column(name="photo")
+
+	@Column(name = "photo")
 	private String photoUrl;
+
+	@Column(name = "school_code")
+	private String schoolCode;
 
 }

@@ -133,7 +133,7 @@ public class SeptServiceImpl implements SeptService {
 			septDetailsEntity.setSchoolCode(studentDetails.getSchoolCode());
 			septDetailsEntity.setAcademicYear(studentDetails.getAcademicYear());
 			septDetailsEntity.setSection(studentDetails.getSection());
-			septDetailsEntity.setStudentEnroll(studentDetails.getEnrollNo());
+			septDetailsEntity.setStudentEnroll(studentDetails.getSwaadhyanRegisterationNo());
 			septDetailsEntity.setAttemptDate(attemptDate);
 
 			septDao.submitSept(septDetailsEntity);

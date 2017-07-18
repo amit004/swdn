@@ -1,5 +1,7 @@
 package com.swdn.model.response;
 
+import com.swdn.modle.dto.SchoolDetailsDto;
+
 import lombok.Data;
 
 @Data
@@ -24,7 +26,7 @@ public class LoginResponse {
 	private String phone;
 
 	private String email;
-	
+
 	private String section;
 
 	private String firstName;
@@ -42,4 +44,11 @@ public class LoginResponse {
 	private String userToken;
 
 	private String picUrl;
+
+	private String swadhyanEnrolNo;
+
+	private String schoolEnrolNo;
+
+	private SchoolDetailsDto schoolDetails;
+
 }

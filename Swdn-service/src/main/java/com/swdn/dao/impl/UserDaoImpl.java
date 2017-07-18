@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.swdn.dao.UserDao;
+import com.swdn.entity.SchoolEntity;
 import com.swdn.entity.StudentEntity;
 import com.swdn.entity.User;
 import com.swdn.entity.UserDetailsEntity;
@@ -43,8 +44,6 @@ public class UserDaoImpl implements UserDao {
 		return sessionFactory.getCurrentSession();
 	}
 
-	
-
 	@Override
 	public void setUserLoginStatus(UserSessionEntity userSession) {
 
@@ -53,7 +52,7 @@ public class UserDaoImpl implements UserDao {
 	}
 
 	@Override
-	public void setUserStatusLogout(UserSessionEntity userSessionEntity){
+	public void setUserStatusLogout(UserSessionEntity userSessionEntity) {
 		Session session = getSession();
 		session.update(userSessionEntity);
 	}
@@ -81,6 +80,11 @@ public class UserDaoImpl implements UserDao {
 	public UserSessionEntity getUserSessionByUserId(Integer userId) {
 		Criteria criteria = getSession().createCriteria(UserSessionEntity.class);
 		return (UserSessionEntity) criteria.add(Restrictions.eq("userId", userId)).uniqueResult();
+	}
+
+	@Override
+	public SchoolEntity getSchollDetails(String schoolCode) throws SwdnException {
+		return (SchoolEntity) getSession().get(SchoolEntity.class, schoolCode);
 	}
 
 }

@@ -1,6 +1,6 @@
 package com.swdn.dao;
 
-import com.swdn.entity.SeptEntityStatus;
+import com.swdn.entity.SchoolEntity;
 import com.swdn.entity.StudentEntity;
 import com.swdn.entity.User;
 import com.swdn.entity.UserDetailsEntity;
@@ -24,5 +24,7 @@ public interface UserDao {
 	void setUserLoginStatus(UserSessionEntity userSessionEntity);
 
 	StudentEntity getStudentDetails(Integer userId) throws SwdnException;
+
+	SchoolEntity getSchollDetails(String schoolCode) throws SwdnException;
 
 }
